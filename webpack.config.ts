@@ -6,7 +6,6 @@ const path = require("path");
 const webpack = require("webpack");
 const DIST = path.resolve(__dirname, "build/dist");
 const SRC = path.resolve(__dirname, "frontend");
-const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
 
 let devtool =  "";
 
