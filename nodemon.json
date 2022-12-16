@@ -1,0 +1,18 @@
+{
+  "verbose": false,
+  "quiet": true,
+  "ignore": [
+    "buildtypes/",
+    "coverage/",
+    "node_modules/",
+    "tests/",
+    "frontend/*",
+    "build/*",
+    "tests/",
+    "webpack.config.js"
+  ],
+  "ext": "ts",
+  "execMap": {
+    "ts": "ts-node"
+  }
+}

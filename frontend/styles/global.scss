@@ -1,0 +1,292 @@
+/* stylelint-disable */
+.image-gallery-fullscreen-button, .image-gallery-play-button {
+    bottom: initial;
+    padding: 0px;
+  }
+/* stylelint-enable */
+
+body, html{
+    margin: 0px;
+    font-size: 16px;
+    font-family: 'Open Sans', sans-serif;
+}
+
+$black: black;
+$white: white;
+$headerHeight: 60px;
+$commonMargin: 16px;
+$smallMargin: 5px;
+
+#videogrid{
+    display: grid;grid-template-columns: repeat(auto-fill, 300px);
+    grid-auto-rows: 300px;
+}
+
+video{
+    width:100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+#header {
+    $headerPadding: 6.5%;
+    padding-left: $headerPadding;
+    padding-right: $headerPadding;
+    box-sizing: border-box;
+
+    h1 {
+        // margin-left: ;
+        color: white;
+        width: auto;
+        float: left;
+    }
+
+    ul{
+        display: inline;
+        float: right;
+
+    }
+
+    li{
+        display: inline;
+        margin-right: 5px;
+    }
+    button{
+        color: white;
+    }
+}
+
+#main{
+    width: 100%;
+    height: 100%;
+    margin: auto;
+    padding-top: 100px;
+     
+}
+
+button, input[type=submit], input[type=file]::file-selector-button{
+    border-radius: 1em;
+    padding: $smallMargin;
+    text-transform: uppercase;
+    color: $white;
+    background-color: $black;
+    border: 0px;
+}
+
+// input[type=file]::file-selector-button:hover {
+// }
+
+
+
+#clearImage, #uploadImage{
+    // visibility: hidden;
+}
+
+#imageFiles{
+    width: 75px;    
+}
+
+// .inputfile{
+//     float: right;
+// }
+
+.additem{
+    float: left;
+}
+
+.clearall{
+    float: right;
+}
+
+#header a{
+    color: white;
+    text-decoration: none;
+}
+
+.deleteTodo{
+    background-color: $black;
+    color: $white;
+    float: right;
+    content: 'x'; // here is your X(cross) sign.
+}
+
+#mdiv {
+    width: 25px;
+    height: 25px;
+    background-color: $black;
+  }
+  
+  .mdiv {
+    height: 25px;
+    width: 2px;
+    margin-left: 12px;
+    background-color: white;
+    transform: rotate(45deg);
+    z-index: 1;
+  }
+  
+  .md {
+    height: 25px;
+    width: 2px;
+    background-color: white;
+    transform: rotate(90deg);
+    z-index: 2;
+  }
+
+#root{
+    height: 100%;
+    width: 100%;
+}
+
+#todolist{
+    width: 100%;
+    // background-color: orange;
+    padding-top: $commonMargin;
+    box-sizing: border-box;
+
+    textarea{
+        resize:vertical;
+        padding: 0px;
+        margin: 0px;
+        border-left-width: 1px;
+        border-right-width: 1px;
+        max-height: 500px;
+    }
+
+    .newpost{
+        textarea{
+            width: 100%;
+        }
+    }
+}
+
+#header{
+    width: 100vw;
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    height: $headerHeight;
+    background-color: $black;
+}
+
+.postItem{
+    width: 100%;
+    margin-bottom: $smallMargin;
+    box-sizing: border-box;
+    border: 1px solid white;
+    border-bottom: 1px solid black;
+    padding-top: $smallMargin;
+    
+    input{
+        padding: 0px;
+        width: calc(100% - 30px);
+        border: 0px;
+        background-color: rgba(0,0,0,0);
+        height: 100%;
+    }
+}
+
+.clear{
+    clear:both;
+}
+
+#app{
+    height: 100vh;
+}
+
+.test{
+    height: 100vh;
+}
+
+:focus{
+    outline: none;
+}
+
+.hidden{
+   -webkit-transform: translate(0,-100%);
+   transform: translate(0,-100%);
+}
+
+.anim{
+  transition: all ease-in-out 1s;
+}
+
+#loginFormsContainer{
+    overflow: hidden;
+    box-sizing: border-box;
+    height: auto;
+}
+
+.galleryContainer{
+    min-height: 50px;
+    width: 100%;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type=number] {
+  -moz-appearance: textfield;
+}
+
+.gridPosition {
+    width: 12.5%;
+}
+
+.odd.gridPosition:nth-child(2n){
+    background-color: white;
+}
+
+.odd.gridPosition{
+    background-color: black;
+}
+
+.even.gridPosition:nth-child(2n){
+        background-color: black;
+    }
+    
+.even.gridPosition{
+        background-color: white;
+    }
+
+.glow{
+    background-color: lighten(blue, 40%) !important;
+    // border: 1px solid lighten(blue, 30%);
+    box-sizing: border-box;
+}
+
+.moveglow{
+    background-color: lighten(blue, 45%) !important;
+    // border: 1px solid lighten(blue, 30%);
+    box-sizing: border-box;
+}
+
+    
+#board{
+    // height: 40vw;
+    // width: 40vw;
+    height: calc(20vw + 20vh);
+    width: calc(20vw + 20vh);
+}
+
+#innercontainer{
+ width: 100%;
+ height: 100%;   
+ display: flex;
+ flex-wrap: wrap;
+}
+
+.pieceContainer{
+    position: relative;
+    .piece{
+        .specific{
+            svg {
+                position: absolute;
+            }
+        }
+    }
+}

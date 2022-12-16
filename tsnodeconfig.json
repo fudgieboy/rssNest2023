@@ -1,0 +1,40 @@
+{
+  "compileOnSave": true,
+  "compilerOptions": {
+      "outDir": "./build/",
+      "allowJs": true,
+      "target": "es5",
+      "module": "commonjs",
+      "alwaysStrict": false,
+      "strict": false,
+      "strictNullChecks": true,
+      "removeComments": true,
+      "moduleResolution": "node",  
+      "esModuleInterop": true,
+      "allowSyntheticDefaultImports": true,
+      "charset": "utf8",
+      "sourceMap": true,
+      "watch": false,
+      "incremental" : true,
+      "noImplicitAny": false
+  },
+  "paths" : {
+    "tslib/*": "node_modules/typescript/lib"
+  },
+  "include": [
+      "app.ts",
+      "localconfig.ts",
+      "apiKeys.ts",
+      "backend/**/*.ts"
+  ],
+  "exclude": [
+      "frontend",
+      "tests",
+      "dist",
+      "node_modules",
+      "**/*.spec.js",
+      "**/*.spec.ts",
+      "**/*.test.ts",
+      "**/*.test.ts"
+  ]
+}

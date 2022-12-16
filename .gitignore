@@ -1,0 +1,10 @@
+localconfig.js
+localconfig.ts
+node_modules
+dist
+vscode
+build
+buildtypes
+.vscode
+coverage
+.pub
