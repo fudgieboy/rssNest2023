@@ -22,7 +22,7 @@
     "tslib/*": "node_modules/typescript/lib"
   },
   "include": [
-      "app.ts",
+      "server.ts",
       "localconfig.ts",
       "apiKeys.ts",
       "backend/**/*.ts"
