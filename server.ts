@@ -56,9 +56,9 @@ app.use(function(req, res, next) {
   next();
 });
 
-let dirPrefix = "build/";
+let dirPrefix = "";
 if((process.env.HEROKU === "true" && curEnv === "production") || (__dirname.indexOf("build")!= -1)){//shouldn't need this anymore
-  dirPrefix = "";
+  dirPrefix = "build/";
 }
 console.log("process.env.HEROKU" + " " + process.env.HEROKU);
 console.log("curEnv" + " " + curEnv);
@@ -71,15 +71,15 @@ app.get("/", (req,res) => {
 app.use(require("./backend/list/listRoutes"));
 app.use(require("./backend/users/userRoutes"));
 
-app.get("/login/", function (req, res) {
-  res.header("Content-Type", "text/html");
-  res.sendFile(path.resolve(__dirname, "dist", "index.html"));
-});
+// app.get("/login/", function (req, res) {
+//   res.header("Content-Type", "text/html");
+//   res.sendFile(path.resolve(__dirname, "dist", "index.html"));
+// });
 
-app.get("/register/", function (req, res) {
-  res.header("Content-Type", "text/html");
-  res.sendFile(path.resolve(__dirname, "dist", "index.html"));
-});
+// app.get("/register/", function (req, res) {
+//   res.header("Content-Type", "text/html");
+//   res.sendFile(path.resolve(__dirname, "dist", "index.html"));
+// });
 
 console.log("starting app...");
 
