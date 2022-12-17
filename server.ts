@@ -57,15 +57,16 @@ app.use(function(req, res, next) {
 });
 
 let dirPrefix = "";
-if((process.env.HEROKU === "true" && curEnv === "production") || (__dirname.indexOf("build")!= -1)){//shouldn't need this anymore
-  dirPrefix = "build/";
-}
+// if((process.env.HEROKU === "true" && curEnv === "production") || (__dirname.indexOf("build")!= -1)){//shouldn't need this anymore
+//   dirPrefix = "build/";
+// }
+
 console.log("process.env.HEROKU" + " " + process.env.HEROKU);
 console.log("curEnv" + " " + curEnv);
 console.log("__dirname" + " " + __dirname);
 
 app.get("/", (req,res) => {
-  res.render(path.resolve(__dirname, dirPrefix + "dist", "index.ejs"));
+  res.render(path.resolve(__dirname, "build/dist", "index.ejs"));
 });
 
 app.use(require("./backend/list/listRoutes"));
