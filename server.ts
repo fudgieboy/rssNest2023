@@ -5,7 +5,7 @@ import colors from "colors";
 import bodyParser from "body-parser";
 import cookieParser from "cookie-parser";
 import morgan from "morgan";
-import stackTrace from "stack-trace";
+// import stackTrace from "stack-trace";
 import * as jwtHelper from "./backend/utils/jwtHelper";
 import UserData from "./backend/dataAccess/users";
 import ListData from "./backend/dataAccess/lists";
@@ -65,32 +65,7 @@ console.log("curEnv" + " " + curEnv);
 console.log("__dirname" + " " + __dirname);
 
 app.get("/", (req,res) => {
-
-  if(!utils.n(req.userToken)){
-    UserData.getUserByUsername(req.userToken, (getUserError, resUser)=>{
-      ListData.getListbyUserId(resUser.memberID, (getListError, resList)=>{
-
-        let actuallyEmpty = false;
-
-        if(resList == null || resList.list.length === 0){
-          actuallyEmpty = true;
-          resList = {list: []};
-        }
-
-        res.render(path.resolve(__dirname, dirPrefix + "dist", "index.ejs"), {
-          lastUsedList: JSON.stringify(resList.list),
-          userListActuallyEmpty: actuallyEmpty
-        });
-
-      });
-    });
-  } else {
-    utils.l("encodedToken is null");
-    res.render(path.resolve(__dirname, dirPrefix + "dist", "index.ejs"), {
-      lastUsedList: JSON.stringify([]),
-      userListActuallyEmpty: false
-    });
-  }
+  res.render(path.resolve(__dirname, dirPrefix + "dist", "index.ejs"));
 });
 
 app.use(require("./backend/list/listRoutes"));
