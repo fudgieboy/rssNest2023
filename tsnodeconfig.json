@@ -16,7 +16,8 @@
       "sourceMap": true,
       "watch": false,
       "incremental" : true,
-      "noImplicitAny": false
+      "noImplicitAny": false,
+      "skipLibCheck": true
   },
   "paths" : {
     "tslib/*": "node_modules/typescript/lib"
