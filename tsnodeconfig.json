@@ -31,7 +31,7 @@
       "frontend",
       "tests",
       "dist",
-      "node_modules",
+      "node_modules/**/*",
       "**/*.spec.js",
       "**/*.spec.ts",
       "**/*.test.ts",
