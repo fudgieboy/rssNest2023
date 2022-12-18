@@ -1,8 +1,8 @@
-const mongoose = require("mongoose");
-var uniqid = require("uniqid");
 import utils = require("../utils/misc");
+const mongoose = require("mongoose");
+const uniqid = require("uniqid");
 
-const ListSchema = mongoose.Schema({
+const ListSchema = new mongoose.Schema({
 	memberID: {
 		type: String,
 		index: true
@@ -21,7 +21,7 @@ const ListSchema = mongoose.Schema({
 	}
 });
 
-var ListData = mongoose.model("List", ListSchema);
+const ListData = mongoose.model("List", ListSchema);
 
 ListData.getListbyUserId = function(memberID, callback){
 	utils.l(memberID);
