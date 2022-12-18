@@ -5,6 +5,10 @@
       "allowJs": true,
       "target": "es5",
       "module": "commonjs",
+      "lib": [
+        "es6",
+        "dom"
+      ],
       "alwaysStrict": false,
       "strict": false,
       "strictNullChecks": true,

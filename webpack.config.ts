@@ -1,9 +1,9 @@
 // const StylelintPlugin = require("stylelint-webpack-plugin");
-const HtmlWebpackPlugin = require("html-webpack-plugin");
-const keys = require("./apiKeys");
-const curEnv = keys.config.curEnv;
-const path = require("path");
-const webpack = require("webpack");
+import HtmlWebpackPlugin from "html-webpack-plugin";
+import config from "./apiKeys";
+const curEnv = config.config.curEnv;
+import path from "path";
+import webpack from "webpack";
 const DIST = path.resolve(__dirname, "build/dist");
 const SRC = path.resolve(__dirname, "frontend");
 

@@ -1,4 +1,4 @@
-var tryRequire = require("try-require");
+import tryRequire from "try-require";
 
 var config;
 
@@ -18,7 +18,6 @@ if(process.env.HEROKU == "true" || process.env.AWS ){
     };
 
 } else {
-    
     var url = __dirname + "/localconfig";
     if(tryRequire.resolve(url)){
         config = require(url);
@@ -27,4 +26,4 @@ if(process.env.HEROKU == "true" || process.env.AWS ){
     // console.log(tryRequire.lastError());
 }
 
-export {config};
+export default {config};

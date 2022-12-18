@@ -1,7 +1,7 @@
-import bcrypt = require("bcryptjs");
-import validator = require("validator");
-import uniqid = require("uniqid");
-const mongoose = require("mongoose");
+import bcrypt from "bcryptjs";
+import validator from "validator";
+import uniqid from "uniqid";
+import mongoose from "mongoose";
  
 const UserSchema = mongoose.Schema({
 	memberID: {
