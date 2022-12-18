@@ -1,9 +1,11 @@
 // const StylelintPlugin = require("stylelint-webpack-plugin");
 import HtmlWebpackPlugin from "html-webpack-plugin";
-import config from "./apiKeys";
-const curEnv = config.config.curEnv;
+const config = require("./apiKeys");
+const curEnv = config.curEnv;
 import path from "path";
 import webpack from "webpack";
+import pkg from "./package.json";
+
 const DIST = path.resolve(__dirname, "build/dist");
 const SRC = path.resolve(__dirname, "frontend");
 
@@ -184,7 +186,7 @@ module.exports = {
         template: __dirname + "/frontend/index.ejs",
         inject: "body",
         manifest: DIST + "/manifest.bundle.js",
-        title:require("./package.json").name
+        title: pkg.name
       }),
       new webpack.DefinePlugin({
         "global.env": JSON.stringify(process.env.NODE_ENV), //these are frontend globals

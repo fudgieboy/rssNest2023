@@ -56,9 +56,9 @@ app.use(function(req, res, next) {
   next();
 });
 
-let dirPrefix = "";
+  let dirPrefix = "build/";
 if((process.env.HEROKU === "true" && curEnv === "production") || (__dirname.indexOf("build")!= -1)){//shouldn't need this anymore
-  dirPrefix = "build/";
+  dirPrefix = ""; //if we are on heroku its starting from inside build folder already
 }
 
 console.log("process.env.HEROKU" + " " + process.env.HEROKU);

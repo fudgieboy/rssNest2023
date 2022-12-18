@@ -1,4 +1,4 @@
-import tryRequire from "try-require";
+const tryRequire = require("try-require");
 
 var config;
 
@@ -26,4 +26,4 @@ if(process.env.HEROKU == "true" || process.env.AWS ){
     // console.log(tryRequire.lastError());
 }
 
-export default {config};
+export {config};
