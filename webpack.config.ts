@@ -9,11 +9,11 @@ const SRC = path.resolve(__dirname, "frontend");
 
 let devtool =  "";
 
-if(curEnv == "development"){
-  devtool = "inline-source-map";
-} else {
+// if(curEnv == "development"){
+//   devtool = "inline-source-map";
+// } else {
   devtool = "source-map";
-}
+// }
 
 console.log("Current Environment: " + curEnv);
 
