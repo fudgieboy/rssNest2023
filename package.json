@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "Node and React Chess app",
   "main": "build/server.js",
+  "engines": {
+    "node": "14"
+  },
   "scripts": {
     "tsnode": "tsnd --respawn server.ts",
     "tsdev": "concurrently \"tsnd --project tsnodeconfig.json --respawn server.ts --watch backend --transpile-only\" \"webpack serve --config webpack.config.ts\"",
