@@ -35,6 +35,7 @@
       "**/*.spec.js",
       "**/*.spec.ts",
       "**/*.test.ts",
-      "**/*.test.ts"
+      "**/*.test.ts",
+      "webpack.config.ts"
   ]
 }

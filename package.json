@@ -1,7 +1,7 @@
 {
-  "name": "react-typescript-webpack-starter",
+  "name": "chess",
   "version": "1.0.0",
-  "description": "A starter template for React with Typescript using Webpack 5",
+  "description": "Node and React Chess app",
   "main": "build/server.js",
   "scripts": {
     "tsnode": "tsnd --respawn server.ts",
