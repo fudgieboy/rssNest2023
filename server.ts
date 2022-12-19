@@ -6,11 +6,6 @@ import bodyParser from "body-parser";
 import cookieParser from "cookie-parser";
 import morgan from "morgan";
 import * as jwtHelper from "./backend/utils/jwtHelper";
-<<<<<<< HEAD
-=======
-// import UserData from "./backend/dataAccess/users";
-// import ListData from "./backend/dataAccess/lists";
->>>>>>> eafece0 (reverted many changes)
 import * as utils from "./backend/utils/misc";
 import ejs from "ejs";
 
