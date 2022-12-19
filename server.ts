@@ -5,12 +5,8 @@ import colors from "colors";
 import bodyParser from "body-parser";
 import cookieParser from "cookie-parser";
 import morgan from "morgan";
-// import stackTrace from "stack-trace";
 import * as jwtHelper from "./backend/utils/jwtHelper";
-import UserData from "./backend/dataAccess/users";
-import ListData from "./backend/dataAccess/lists";
 import * as utils from "./backend/utils/misc";
-import {connection} from "./backend/dataAccess/dbConnection";
 import ejs from "ejs";
 
 require("@babel/register")({extensions: [".js", ".ts"]});
@@ -22,7 +18,7 @@ const curEnv = config.curEnv;
 const dev = (curEnv === "development");
 require("pretty-error").start();
 
-connection(config.dbCreds);
+// connection(config.dbCreds);
 
 app.use(cookieParser(config.cookieSecret, { httpOnly: true })); 
 app.use(morgan("dev"));
@@ -56,7 +52,7 @@ app.use(function(req, res, next) {
   next();
 });
 
-  let dirPrefix = "build/";
+let dirPrefix = "build/";
 if((process.env.HEROKU === "true" && curEnv === "production") || (__dirname.indexOf("build")!= -1)){//shouldn't need this anymore
   dirPrefix = ""; //if we are on heroku its starting from inside build folder already
 }
@@ -69,8 +65,8 @@ app.get("/", (req,res) => {
   res.render(path.resolve(__dirname, dirPrefix + "dist", "index.ejs"), {});
 });
 
-app.use(require("./backend/list/listRoutes"));
-app.use(require("./backend/users/userRoutes"));
+// app.use(require("./backend/list/listRoutes"));
+// app.use(require("./backend/users/userRoutes"));
 
 // app.get("/login/", function (req, res) {
 //   res.header("Content-Type", "text/html");
