@@ -13,11 +13,14 @@
       "esModuleInterop": true,
       "allowSyntheticDefaultImports": true,
       "charset": "utf8",
+      "lib": [
+        "es6"
+      ],
       "sourceMap": true,
       "watch": false,
       "incremental" : true,
-      "noImplicitAny": false,
-      "skipLibCheck": true
+      "skipLibCheck": true,
+      "noImplicitAny": false
   },
   "paths" : {
     "tslib/*": "node_modules/typescript/lib"
