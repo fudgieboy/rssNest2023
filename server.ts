@@ -73,16 +73,6 @@ app.get("/", (req,res) => {
 // app.use(require("./backend/list/listRoutes"));
 // app.use(require("./backend/users/userRoutes"));
 
-// app.get("/login/", function (req, res) {
-//   res.header("Content-Type", "text/html");
-//   res.sendFile(path.resolve(__dirname, "dist", "index.html"));
-// });
-
-// app.get("/register/", function (req, res) {
-//   res.header("Content-Type", "text/html");
-//   res.sendFile(path.resolve(__dirname, "dist", "index.html"));
-// });
-
 console.log("starting app...");
 
 app.listen(port, () => {
