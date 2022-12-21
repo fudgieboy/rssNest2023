@@ -4,8 +4,10 @@ import Chesspiece from "./Pieces/Piece";
 import TodoListStore from "../stores/TodoListStore";
 import LocalStore from "../stores/LocalStore";
 import {getPieceFromType, PB} from "./Pieces/PieceTypes";
+import Gamelogic from "../../shared/gamelogic";
 //https://www.npmjs.com/package/react-chess-pieces
 
+console.log(Gamelogic());
 class Axes{
   constructor(a, n) {
     this.alpha = a;

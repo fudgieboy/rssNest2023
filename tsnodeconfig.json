@@ -29,7 +29,8 @@
       "server.ts",
       "localconfig.ts",
       "apiKeys.ts",
-      "backend/**/*.ts"
+      "backend/**/*.ts",
+      "shared/**/*.ts"
   ],
   "exclude": [
       "frontend",

@@ -8,6 +8,7 @@ import morgan from "morgan";
 import * as jwtHelper from "./backend/utils/jwtHelper";
 import * as utils from "./backend/utils/misc";
 import ejs from "ejs";
+import Gamelogic from './shared/gamelogic';
 
 require("@babel/register")({extensions: [".js", ".ts"]});
 
@@ -62,6 +63,7 @@ console.log("curEnv" + " " + curEnv);
 console.log("__dirname" + " " + __dirname);
 
 app.get("/", (req,res) => {
+  console.log(Gamelogic());
   res.render(path.resolve(__dirname, dirPrefix + "dist", "index.ejs"), {});
 });
 

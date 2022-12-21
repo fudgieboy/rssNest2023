@@ -8,6 +8,7 @@ import pkg from "./package.json";
 
 const DIST = path.resolve(__dirname, "build/dist");
 const SRC = path.resolve(__dirname, "frontend");
+const SHARED = path.resolve(__dirname, "shared");
 
 let devtool =  "";
 
@@ -61,7 +62,7 @@ module.exports = {
               workerNodeArgs: ['--max-old-space-size=1024'],
             }}, "babel-loader"], */
             include: [
-              SRC
+              SRC, SHARED
             ],
             exclude: /(node_modules)/,
             enforce: "pre",
