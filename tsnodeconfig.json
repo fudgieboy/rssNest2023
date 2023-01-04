@@ -7,7 +7,7 @@
       "module": "commonjs",
       "alwaysStrict": false,
       "strict": false,
-      "strictNullChecks": true,
+      "strictNullChecks": false,
       "removeComments": true,
       "moduleResolution": "node",  
       "esModuleInterop": true,

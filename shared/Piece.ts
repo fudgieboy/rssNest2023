@@ -31,6 +31,7 @@ const Piece:React.FC<PieceProps> = (props): ReactElement => {
   
   return (
     <div id = "test" className = "piece" onDragStart = {(e)=>{ e.dataTransfer.setData("movingpiece", pos); }}
+                             onDragEnd = {(e)=>{}}   
                              draggable="true">
 
       <Piece  direction = {direction} outline = {outline} color = {color} />

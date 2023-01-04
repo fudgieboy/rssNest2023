@@ -120,11 +120,16 @@ module.exports = {
           secure: false,
           changeOrigin: true
         },
-        "/**": { //proxy everything else
-          target: "http://localhost:8080/",
-          ws: false,
-          secure: false,
-          changeOrigin: true
+      "/**": { //proxy everything else
+        target: "http://localhost:8080/",
+        ws: false,
+        secure: false,
+        changeOrigin: true
+      },
+      "/": { //for the websocket connection
+          target: 'wss://localhost:8081',
+          secure: true,
+          ws: true
         }
       },
       overlay: {

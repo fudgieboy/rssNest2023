@@ -9,10 +9,14 @@ import * as jwtHelper from "./backend/utils/jwtHelper";
 import * as utils from "./backend/utils/misc";
 import ejs from "ejs";
 import Gamelogic from './shared/gamelogic';
+import {createServer} from 'http';
+import WebSocket, {WebSocketServer} from 'ws';
+//https://developer.mozilla.org/en-US/docs/Web/API/WebSocket/WebSocket
+const app = express();
+const server = createServer();
+const wss = new WebSocketServer({ port: 8081 });
 
 require("@babel/register")({extensions: [".js", ".ts"]});
-
-const app = express();
 
 const port = process.env.PORT || 8080;
 const curEnv = config.curEnv;
@@ -63,7 +67,6 @@ console.log("curEnv" + " " + curEnv);
 console.log("__dirname" + " " + __dirname);
 
 app.get("/", (req,res) => {
-  console.log(Gamelogic());
   res.render(path.resolve(__dirname, dirPrefix + "dist", "index.ejs"), {});
 });
 
@@ -75,5 +78,40 @@ console.log("starting app...");
 app.listen(port, () => {
   console.log(colors.yellow(`Listening to app on server port ${port} in ${curEnv} mode`));
 });
+
+const gamelogic = Gamelogic();
+
+wss.on('connection', function connection(ws) {
+  
+  ws.binaryType = 'arraybuffer';
+
+  ws.on('message', function message(data) {
+    
+    const inputCommands = JSON.parse(data.toString());
+
+    if(inputCommands.command == "getValidMoves"){
+      const moves = gamelogic.getValidMoves(inputCommands.location);
+      ws.send(JSON.stringify({command: "receiveMoves", movelist: moves}));
+    }
+    
+    if(inputCommands.command == "movePiece"){
+      console.log("movePiece");
+      const moves = gamelogic.movePiece(inputCommands.location, inputCommands.target);
+      ws.send(JSON.stringify({command: "finishMove", completedMove: moves}));
+      
+      console.log(wss.clients);
+
+      wss.clients.forEach( (client) => {
+        console.log("finishMove");
+          client.send(JSON.stringify({command: "finishMove", completedForeignMove: moves}));
+      });
+    }
+    // ws.on('message', function message(data, isBinary) {
+    // });
+  });
+
+  ws.send('connection initialized');
+});
+
 
 export {};

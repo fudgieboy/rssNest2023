@@ -1,12 +1,7 @@
 import React, {ReactElement, Component, useEffect, useState} from "react";
 import {BrowserRouter as Router, Route, Redirect, Switch, Link} from "react-router-dom";
-// import {PropTypes} from "prop-types";
-
 import LocalStore from "../../stores/LocalStore";
-
-import Register from "../../globalComponents/Register";
-import Login from "../../globalComponents/Login";
-import Chessboard from "../../globalComponents/Chessboard";
+import Chessboard from "../../globalComponents/Chessboard"; 
 
 const Main: React.FC = () : ReactElement => {
   const [loggedIn, setLoggedIn] = useState<boolean>(LocalStore.store.getLoggedIn());
