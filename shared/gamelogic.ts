@@ -41,7 +41,6 @@ class Chesspiece{
     return this.neverMoved;
   }
 
-
   public getNeverMoved=()=>{
     return this.neverMoved;
   }
@@ -55,14 +54,14 @@ class Chesspiece{
 }
 
 const Gamelogic = () => {
-  // const whiteInCheck= false;
-  // const blackInCheck= false; 
+  let whiteInCheck= false;
+  let blackInCheck= false; 
 
   const boardID = v4();
   
   const GRIDWIDTH = 8;
 
-  const initialPositions: Array<string[]> = [
+  let basicPositions: Array<string[]> = [
     ["rook black", "knight black", "bishop black", "queen black" , "king black", "bishop black", "knight black", "rook black"],
     ["pawn black", "pawn black", "pawn black", "pawn black", "pawn black", "pawn black", "pawn black", "pawn black"],
     ["", "", "", "", "", "", "", ""],
@@ -73,13 +72,23 @@ const Gamelogic = () => {
     ["rook white", "knight white", "bishop white", "queen white", "king white", "bishop white", "knight white", "rook white"]
   ];
   
+  const initialPositions = JSON.parse(JSON.stringify(basicPositions));
+
+  const resetGame = () => {
+    console.log("resetting game");
+    whiteInCheck= false;
+    blackInCheck= false;
+    basicPositions = JSON.parse(JSON.stringify(initialPositions));
+    constructedPositions = constructPositions();
+};
+
   const constructPositions = () => {
     console.log("constructPositions");
     const positionGrid: Array<Array<Chesspiece>> = [];
     for(let i = 0; i < GRIDWIDTH; i ++){
       const arr:Array<Chesspiece> = [];
       for(let k = 0; k < GRIDWIDTH; k++){
-        const position = initialPositions[i][k]; 
+        const position = basicPositions[i][k]; 
         let piece: Chesspiece;
         position.length ? piece = new Chesspiece(position, i, k) : piece = null;
         arr.push(piece);
@@ -91,6 +100,23 @@ const Gamelogic = () => {
 
   let constructedPositions = constructPositions();
 
+  const logConstructedPositions = () => {
+    for(let i = 0; i < GRIDWIDTH; i ++){
+      for(let k = 0; k < GRIDWIDTH; k++){
+        const pos = constructedPositions[i][k];
+
+        if(pos != null){
+          console.log(pos.getBoardPosition() + " " + (pos.pieceType));
+        } else {
+          console.log("empty");
+        }
+      }
+      console.log("");
+      console.log("-------" + i + "-------");
+      console.log("");
+    }
+  };
+ 
   const getPieceByCoords = (targetPos:Coords) : Chesspiece=>{
     return constructedPositions[targetPos.x][targetPos.y];
   };
@@ -131,13 +157,13 @@ const Gamelogic = () => {
     const range = currentPiece.getPieceBehavior().move();
     
     if(range.x == "max"){
-      maxDistance.x = initialPositions[0].length;
+      maxDistance.x = basicPositions[0].length;
     } else {
       maxDistance.x = range.x;
     }
 
     if(range.y == "max"){
-      maxDistance.y = initialPositions.length;
+      maxDistance.y = basicPositions.length;
     } else {
       maxDistance.y = range.y;
     }
@@ -171,7 +197,7 @@ const Gamelogic = () => {
         const maxX = Math.abs(i) - current.x;
         const maxY = Math.abs(i) - current.y;
         if(maxX < maxRange && i != current.y  && !forwardHit){ 
-          fpos = initialPositions[current.x][i]; 
+          fpos = basicPositions[current.x][i]; 
           if(fpos.length){
             forwardHit = true;
           }
@@ -180,7 +206,7 @@ const Gamelogic = () => {
         i = i+1;
 
         if(maxX < maxRange && j != current.y && !backwardHit){
-          bpos = initialPositions[current.x][j]; 
+          bpos = basicPositions[current.x][j]; 
           if(bpos.length){
             backwardHit = true;
           }
@@ -189,7 +215,7 @@ const Gamelogic = () => {
         j = j-1;
 
         if(maxY < maxRange && k != current.x && !rightWardHit){
-          kpos = initialPositions[k][current.y]; 
+          kpos = basicPositions[k][current.y]; 
           if(kpos.length){
             rightWardHit = true;
           } 
@@ -198,7 +224,7 @@ const Gamelogic = () => {
         k = k+1;
 
         if(maxY < maxRange  && l != current.x && !leftWardHit){
-          lpos = initialPositions[l][current.y]; 
+          lpos = basicPositions[l][current.y]; 
           if(lpos.length){
             leftWardHit = true;
           }
@@ -313,28 +339,28 @@ const Gamelogic = () => {
         for( let i = 0; i < maxRange; i++){ 
           if(i != 0){
             if( x+i < GRIDWIDTH && y+i < GRIDWIDTH && !br){
-              const pos = initialPositions[x+i][y+i]; 
+              const pos = basicPositions[x+i][y+i]; 
               if(pos.length){
                 br = true;
               }
               positions.push({ x:x+i,  y:y+i });
             }
             if( x+i < GRIDWIDTH && y-i >=0 && !tr){
-              const pos = initialPositions[x+i][y-i]; 
+              const pos = basicPositions[x+i][y-i]; 
               if(pos.length){
                 tr = true;
               }
               positions.push({ x:x+i,  y:y-i});
             }
             if(x+i < GRIDWIDTH && y-i >= 0 && !bl){
-              const pos = initialPositions[x+i][y-i]; 
+              const pos = basicPositions[x+i][y-i]; 
               if(pos.length){
                 bl = true;
               }
               positions.push({ x:x-i,  y:y+i});
             }
             if(x-i >= 0 && y-i >= 0 && !tl){
-              const pos = initialPositions[x-i][y-i]; 
+              const pos = basicPositions[x-i][y-i]; 
               if(pos.length){
                 tl = true;
               }
@@ -348,7 +374,6 @@ const Gamelogic = () => {
 
     if(range.constraint === PB.omnidirectional ){
       console.log("setting omnidirectional");
-      
       validPositions = getValidLaterals(validPositions, range);
       validPositions = getValidDiagonals(validPositions, range);
     } else if (range.constraint === PB.horsey){
@@ -363,25 +388,35 @@ const Gamelogic = () => {
     return validPositions;
   };
   
-  const movePiece = (piecePos, targetPos):boolean =>{
-    const piece = getPieceByID(piecePos);
-    const targetPiece = getPieceByID(targetPos);
+  const movePiece = (moveData):boolean =>{
 
-    const pieceCoords = idToCoords(piecePos);
-    const targetCoords = idToCoords(targetPos);
+    console.log("movePiece called");
+    console.log(moveData);
+    
+    const piece = getPieceByID(moveData.location);
+    const targetPiece = getPieceByID(moveData.target);
+
+    const pieceCoords = idToCoords(moveData.location);
+    const targetCoords = idToCoords(moveData.target);
+
+    if(pieceCoords.x === targetCoords.x && pieceCoords.y === targetCoords.y){
+      return false;
+    }
 
     if (piece != null || piece != undefined) {
       if (targetPiece != null || targetPiece != undefined) {
         constructedPositions = null;
-        initialPositions[targetCoords.x][targetCoords.y] = initialPositions[pieceCoords.x][pieceCoords.y]; 
-        initialPositions[pieceCoords.x][pieceCoords.y] = "";
+        basicPositions[targetCoords.x][targetCoords.y] = basicPositions[pieceCoords.x][pieceCoords.y]; 
+        basicPositions[pieceCoords.x][pieceCoords.y] = "";
         constructedPositions = constructPositions();
+        // logConstructedPositions();
         return true;
       } else { 
         constructedPositions = null;
-        initialPositions[targetCoords.x][targetCoords.y] = initialPositions[pieceCoords.x][pieceCoords.y]; 
-        initialPositions[pieceCoords.x][pieceCoords.y] = "";
+        basicPositions[targetCoords.x][targetCoords.y] = basicPositions[pieceCoords.x][pieceCoords.y]; 
+        basicPositions[pieceCoords.x][pieceCoords.y] = "";
         constructedPositions = constructPositions();
+        // logConstructedPositions();
         return true;
       }
     } else {
@@ -396,6 +431,7 @@ const Gamelogic = () => {
     getConstructedGrid,
     getValidMoves,
     movePiece,
+    resetGame,
   };
 };
 

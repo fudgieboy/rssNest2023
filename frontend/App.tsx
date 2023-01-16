@@ -10,5 +10,5 @@ const App: React.FC = (): ReactElement => {
   );
 };
 
-App.displayName = "MainApp";
+App.displayName = "App";
 export default App;

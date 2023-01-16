@@ -14,13 +14,25 @@ enum orientation {
   white= "up"
 }
 
-const gamelogic = Gamelogic();
+// const gamelogic = Gamelogic();
+  
+const currentPositions: Array<string[]> = [
+  ["rook black", "knight black", "bishop black", "queen black" , "king black", "bishop black", "knight black", "rook black"],
+  ["pawn black", "pawn black", "pawn black", "pawn black", "pawn black", "pawn black", "pawn black", "pawn black"],
+  ["", "", "", "", "", "", "", ""],
+  ["", "", "", "", "queen black", "", "", ""],
+  ["", "", "", "", "", "", "", ""],
+  ["", "", "", "", "", "", "", ""],
+  ["pawn white", "pawn white", "pawn white", "pawn white", "pawn white", "pawn white", "pawn white", "pawn white"],
+  ["rook white", "knight white", "bishop white", "queen white", "king white", "bishop white", "knight white", "rook white"]
+];
 
 const Chessboard: React.FC = (): ReactElement => {
   socket.onmessage = (event) => {
     let data;
     let inputCommands;
 
+    console.log("receive message");
     console.log(event.data);
 
     try{
@@ -29,11 +41,15 @@ const Chessboard: React.FC = (): ReactElement => {
     }catch(error){
       console.log("error in json parsing");
     }
-
+    
     if(inputCommands && inputCommands.command == "receiveMoves"){
       recieveMoves(inputCommands.movelist);
+    } else if(inputCommands && inputCommands.command == "finishForeignMove"){
+      console.log("finishForeignMove");
+      finishForeignMove( inputCommands.location, inputCommands.target);
     } else if (inputCommands && inputCommands.command == "finishMove") {
-      finishMove(inputCommands.completedMove);
+      console.log("finishMove");
+      finishMoveLocal( inputCommands.location, inputCommands.target );
     }
   };
 
@@ -42,47 +58,16 @@ const Chessboard: React.FC = (): ReactElement => {
   
   const GRIDWIDTH = 8;
   let highlightActive = false;
-
-  const recieveMoves = (validMoves)=> {
-    currentHighlightedSpaces = validMoves;
-
-    validMoves.forEach((i)=>{
-      const el = document.getElementById( i.x  + " " + i.y );
-      el.classList.add("moveglow");
-    });
-  };
   
-  let currentPositions: Array<string[]> = [
-    ["rook black", "knight black", "bishop black", "queen black", "king black", "bishop black", "knight black", "rook black"],
-    ["pawn black", "pawn black", "pawn black", "pawn black", "pawn black", "pawn black", "pawn black", "pawn black"],
-    ["", "", "", "", "", "", "", ""],
-    ["", "", "", "","queen black", "", "", ""],
-    ["", "", "", "", "", "", "", ""],
-    ["", "", "", "", "", "", "", ""],
-    ["pawn white", "pawn white", "pawn white", "pawn white", "pawn white", "pawn white", "pawn white", "pawn white"],
-    ["rook white", "knight white", "bishop white", "queen white", "king white", "bishop white", "knight white", "rook white"]
-  ];
 
-  let currentHighlightedSpaces = [];
+  const [constructedBoard, setConstructedBoard] = useState<Array<ReactElement[]>>(
+    constructPositions()
+  );
 
-  const clearHighlightedSquares = () => {
-    highlightActive = false;
-    currentHighlightedSpaces.forEach((i)=>{
-      let el = document.getElementById( i.x  + " " + i.y );
-      el.classList.remove("moveglow");
-    });
-  };
-
-  // const getPieceFromCoords( org: {x: number, y: number} ){
-  //   const piece = currentPositions[org.y][org.x];
-  // };
-  
-  // const getPieceIDFromCoords( org: {x: number, y: number} ){
-  //   const piece = currentPositions[org.y][org.x];
-  // };
-
-  const constructPositions = () : Array<ReactElement[]> => {
-    const constructedPositions: Array<ReactElement[]> = [];
+  function constructPositions() : Array<ReactElement[]> {
+    console.trace();
+    console.log("constructPositions");
+    const positions: Array<ReactElement[]> = [];
     for(let i = 0; i < GRIDWIDTH; i ++){
       const arr:ReactElement[] = [];
       const even:string = (( i % 2 ) == 0 ? "even":"odd");
@@ -97,7 +82,6 @@ const Chessboard: React.FC = (): ReactElement => {
             id = {i +" " + k}
             onDragEnter = {(e)=>{
               if(!highlightActive){
-                console.log("highlight");
                 highlightActive = true;
                 e.currentTarget.classList.add("glow");
                 const movingPiece = e.dataTransfer.getData("movingpiece");
@@ -117,12 +101,11 @@ const Chessboard: React.FC = (): ReactElement => {
               e.currentTarget.classList.remove("glow");
             }}
             onDrop = {(e)=>{
-              console.log("drop");
+              console.log('drop');
               clearHighlightedSquares();
               e.preventDefault();
               e.currentTarget.classList.remove("glow");
               const movingPiece = e.dataTransfer.getData("movingpiece");
-              // e.dataTransfer.clearData();
               movePiece(movingPiece, e.currentTarget.id);
             }}
             key={i + " " + k}><div className = "pieceContainer">
@@ -130,31 +113,20 @@ const Chessboard: React.FC = (): ReactElement => {
               </div>
             </div>);
       }
-      constructedPositions.push(arr);
+      positions.push(arr);
     }
-    return constructedPositions;
-  };
+    return positions;
+  }
 
-  let constructedPositions = constructPositions();
+  function finishForeignMove(currentLocation, targetLocation){
+    finishMovePiece(currentLocation, targetLocation);
+  }
 
-  const getValidMoves = (currentLocation) => {
-    const content = {command: "getValidMoves", location: currentLocation};
-    socket.send(JSON.stringify(content));
-  };
-
-  const getConstructedGrid = () => {
-    return constructedPositions;
-  };
-
-  const [constructedBoard, setConstructedBoard] = useState<Array<ReactElement[]>>(
-    getConstructedGrid()
-  );
+  function finishMoveLocal(currentLocation, targetLocation){
+    finishMovePiece(currentLocation, targetLocation);
+  }
   
-  const movePiece = (currentLocation, targetLocation) =>{
-    const success = gamelogic.movePiece(currentLocation, targetLocation);
-    console.log("movepiece completed");
-    
-    if(success){
+  function finishMovePiece(currentLocation, targetLocation){ //probably should include pieceID
       const targetPos = {x: 0, y: 0};
       const currentPos = {x: 0, y: 0};
 
@@ -165,16 +137,70 @@ const Chessboard: React.FC = (): ReactElement => {
       currentPos.y = currentLocation[2];
 
       currentPositions[targetPos.x][targetPos.y] = currentPositions[currentPos.x][currentPos.y];
-      currentPositions[currentPos.x][currentPos.y] = "";
-      
+      currentPositions[currentPos.x][currentPos.y] = ""; 
       setConstructedBoard(constructPositions());
-  } else {
-      console.log('error moving piece');
+  }
+  
+  function movePiece(currentLocation, targetLocation){ 
+    console.log("movePiece");
+    const moveTime:Date = new Date();
+
+    const targetPos = {x: 0, y: 0};
+    const currentPos = {x: 0, y: 0};
+
+    targetPos.x = targetLocation[0];
+    targetPos.y = targetLocation[2];
+
+    currentPos.x = currentLocation[0];
+    currentPos.y = currentLocation[2];
+
+    if(currentPos.x === targetPos.x && currentPos.y === targetPos.y){
+      console.log("piece not moved");
+      return;
     }
-    // const content = {command: "movePiece", location: currentLocation, target: targetLocation};
-    // socket.send(JSON.stringify(content));
+
+    // currentPositions[targetPos.x][targetPos.y] = currentPositions[currentPos.x][currentPos.y];
+    // currentPositions[currentPos.x][currentPos.y] = "";
+    
+    // setConstructedBoard(constructPositions()); 
+
+    const content = {command: "movePiece", moveTime: moveTime, location: currentLocation, target: targetLocation};
+    socket.send(JSON.stringify(content));
+  }
+
+  function recieveMoves(validMoves){
+    currentHighlightedSpaces = validMoves;
+
+    validMoves.forEach((i)=>{
+      const el = document.getElementById( i.x  + " " + i.y );
+      el.classList.add("moveglow");
+    });
+  }
+
+  let currentHighlightedSpaces = [];
+
+  const clearHighlightedSquares = () => {
+    console.log("clearHighlightedSquares");
+    highlightActive = false;
+    currentHighlightedSpaces.forEach((i)=>{
+      let el = document.getElementById( i.x  + " " + i.y );
+      el.classList.remove("moveglow");
+    });
   };
 
+  // const getPieceFromCoords( org: {x: number, y: number} ){
+  //   const piece = currentPositions[org.y][org.x];
+  // };
+  
+  // const getPieceIDFromCoords( org: {x: number, y: number} ){
+  //   const piece = currentPositions[org.y][org.x];
+  // };
+
+  const getValidMoves = (currentLocation) => {
+    console.log("getting valid moves");
+    const content = {command: "getValidMoves", location: currentLocation};
+    socket.send(JSON.stringify(content));
+  };
 
   return (
     <div id = "board">

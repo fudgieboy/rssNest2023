@@ -10,7 +10,9 @@ import * as utils from "./backend/utils/misc";
 import ejs from "ejs";
 import Gamelogic from './shared/gamelogic';
 import {createServer} from 'http';
+import {v4} from 'uuid';
 import WebSocket, {WebSocketServer} from 'ws';
+
 //https://developer.mozilla.org/en-US/docs/Web/API/WebSocket/WebSocket
 const app = express();
 const server = createServer();
@@ -82,10 +84,34 @@ app.listen(port, () => {
 const gamelogic = Gamelogic();
 
 wss.on('connection', function connection(ws) {
-  
+
   ws.binaryType = 'arraybuffer';
+  ws.send(JSON.stringify({command: "initUser", newUserID: v4()}));
+
+  ws.onclose = () => {
+
+    setTimeout(() => {
+        ws.terminate();
+        console.log("terminating");
+    }, 500);
+    
+      
+    let curSize = wss.clients.size;
+    if(curSize < 2){
+      console.log("game reset");
+      gamelogic.resetGame();
+      ws.send(JSON.stringify({command: "resetGame"}));
+    }
+    
+    wss.clients.forEach( (client) => {
+      if(ws!=client){
+          client.send("closed");
+      }
+    });
+  };
 
   ws.on('message', function message(data) {
+    console.log("user connected");
     
     const inputCommands = JSON.parse(data.toString());
 
@@ -95,23 +121,30 @@ wss.on('connection', function connection(ws) {
     }
     
     if(inputCommands.command == "movePiece"){
-      console.log("movePiece");
-      const moves = gamelogic.movePiece(inputCommands.location, inputCommands.target);
-      ws.send(JSON.stringify({command: "finishMove", completedMove: moves}));
+      const moveTime = new Date(inputCommands.moveTime);
+      const moveData = {
+              location: inputCommands.location, 
+              target: inputCommands.target, 
+              moveTime: moveTime
+      };
       
-      console.log(wss.clients);
+      const completed = gamelogic.movePiece(moveData);
 
-      wss.clients.forEach( (client) => {
-        console.log("finishMove");
-          client.send(JSON.stringify({command: "finishMove", completedForeignMove: moves}));
-      });
+      if(completed){
+        ws.send(JSON.stringify({command: "finishMove", completeTime: new Date(), location: inputCommands.location, target: inputCommands.target}));
+
+        // wss.clientseeee.forEach( (client) => {
+        //   if(ws!=client){
+        //     client.send(JSON.stringify({command: "finishForeignMove", location: inputCommands.location, target: inputCommands.target}));
+        //   }
+        // });
+      }
     }
-    // ws.on('message', function message(data, isBinary) {
-    // });
   });
+
+
 
   ws.send('connection initialized');
 });
-
 
 export {};

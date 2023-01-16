@@ -4,8 +4,8 @@ import LocalStore from "../../stores/LocalStore";
 import Chessboard from "../../globalComponents/Chessboard"; 
 
 const Main: React.FC = () : ReactElement => {
-  const [loggedIn, setLoggedIn] = useState<boolean>(LocalStore.store.getLoggedIn());
-  const [unmountLoginForms, setUnmountLoginForms] = useState<boolean>(LocalStore.store.getLoggedIn());
+  // const [loggedIn, setLoggedIn] = useState<boolean>(LocalStore.store.getLoggedIn());
+  // const [unmountLoginForms, setUnmountLoginForms] = useState<boolean>(LocalStore.store.getLoggedIn());
                  
   // const updateLoggedInStatus = (loggedIn:boolean):void=>{
   //   setLoggedIn(loggedIn);
