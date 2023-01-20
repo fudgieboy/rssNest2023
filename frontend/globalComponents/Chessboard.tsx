@@ -1,4 +1,4 @@
-import React, { ReactElement, useState } from "react";
+import React, { ReactElement, useState, useEffect} from "react";
 import { v4 } from "uuid";
 import Chesspiece from "./Pieces/Piece";
 import TodoListStore from "../stores/TodoListStore";
@@ -14,9 +14,9 @@ enum orientation {
   white= "up"
 }
 
-// const gamelogic = Gamelogic();
-  
-const currentPositions: Array<string[]> = [
+const gamelogic = Gamelogic();
+
+const initialPositions: Array<string[]> = [
   ["rook black", "knight black", "bishop black", "queen black" , "king black", "bishop black", "knight black", "rook black"],
   ["pawn black", "pawn black", "pawn black", "pawn black", "pawn black", "pawn black", "pawn black", "pawn black"],
   ["", "", "", "", "", "", "", ""],
@@ -25,33 +25,51 @@ const currentPositions: Array<string[]> = [
   ["", "", "", "", "", "", "", ""],
   ["pawn white", "pawn white", "pawn white", "pawn white", "pawn white", "pawn white", "pawn white", "pawn white"],
   ["rook white", "knight white", "bishop white", "queen white", "king white", "bishop white", "knight white", "rook white"]
-];
+];  
 
 const Chessboard: React.FC = (): ReactElement => {
-  socket.onmessage = (event) => {
-    let data;
-    let inputCommands;
 
-    console.log("receive message");
-    console.log(event.data);
+  const [delayedEvents, setDelayedEvents] = useState([]);
 
-    try{
-      data =  event.data.toString();
-      inputCommands = JSON.parse(data);
-    }catch(error){
-      console.log("error in json parsing");
+//pass a move uuid from the backend and a time.
+  const intervalID = setInterval(() => { 
+    for(let i = 0; i < delayedEvents.length; i ++){
+      if (delayedEvents[i] && delayedEvents[i].command == "finishMove") {
+        if(finishMoveLocal(delayedEvents[i].location, delayedEvents[i].target, delayedEvents[i].moveID )){
+          delayedEvents[i] = null;       
+        }
+      }
     }
-    
-    if(inputCommands && inputCommands.command == "receiveMoves"){
-      recieveMoves(inputCommands.movelist);
-    } else if(inputCommands && inputCommands.command == "finishForeignMove"){
-      console.log("finishForeignMove");
-      finishForeignMove( inputCommands.location, inputCommands.target);
-    } else if (inputCommands && inputCommands.command == "finishMove") {
-      console.log("finishMove");
-      finishMoveLocal( inputCommands.location, inputCommands.target );
-    }
-  };
+
+    clearInterval(intervalID);
+  }, 100); //this is a hack to get the board to update when the store changes. I need to find a better way to do this
+  
+  useEffect(() => {
+    socket.onmessage = (event) => {
+      let data;
+      let inputCommands;
+
+      console.log("receive message");
+      console.log(event.data);
+
+      try{
+        data =  event.data.toString();
+        inputCommands = JSON.parse(data);
+      }catch(error){
+        console.log("error in json parsing");
+      }
+      
+      if(inputCommands && inputCommands.command == "receiveMoves"){
+        recieveMoves(inputCommands.movelist);
+      } else if(inputCommands && inputCommands.command == "finishForeignMove"){
+        console.log("finishForeignMove");
+        finishForeignMove( inputCommands.location, inputCommands.target, inputCommands.moveID);
+      } else if (inputCommands && inputCommands.command == "finishMove") {
+        console.log("finishMove");
+        setDelayedEvents([...delayedEvents, inputCommands] ); 
+      }
+    };
+  });
 
   const whiteInCheck= false;
   const blackInCheck= false;
@@ -73,7 +91,7 @@ const Chessboard: React.FC = (): ReactElement => {
       const even:string = (( i % 2 ) == 0 ? "even":"odd");
       const classes:string = "gridPosition " + even;
       for(let k = 0; k < GRIDWIDTH; k ++){
-          const position = currentPositions[i][k];
+          const position = initialPositions[i][k];
           const split = position.split(" ");
           const piece = position.length != 0? 
           <Chesspiece boardPosition = {i + " " + k} pieceType = {split[0]} pieceColor = {split[1]} /> : null;
@@ -118,16 +136,23 @@ const Chessboard: React.FC = (): ReactElement => {
     return positions;
   }
 
-  function finishForeignMove(currentLocation, targetLocation){
-    finishMovePiece(currentLocation, targetLocation);
+  function finishForeignMove(currentLocation, targetLocation, moveID){
+    return finishMovePiece(currentLocation, targetLocation, moveID);
   }
 
-  function finishMoveLocal(currentLocation, targetLocation){
-    finishMovePiece(currentLocation, targetLocation);
+  function finishMoveLocal(currentLocation, targetLocation, moveID){
+    return finishMovePiece(currentLocation, targetLocation, moveID);
   }
+
+  const completedMoves = {};
   
-  function finishMovePiece(currentLocation, targetLocation){ //probably should include pieceID
-      const targetPos = {x: 0, y: 0};
+  function finishMovePiece(currentLocation, targetLocation, moveID){ //probably should include pieceID
+
+    console.log(this);
+    
+    if(completedMoves[moveID] == undefined || completedMoves[moveID] == false){
+
+      const targetPos = {x: 0, y: 0}; 
       const currentPos = {x: 0, y: 0};
 
       targetPos.x = targetLocation[0];
@@ -136,9 +161,14 @@ const Chessboard: React.FC = (): ReactElement => {
       currentPos.x = currentLocation[0];
       currentPos.y = currentLocation[2];
 
-      currentPositions[targetPos.x][targetPos.y] = currentPositions[currentPos.x][currentPos.y];
-      currentPositions[currentPos.x][currentPos.y] = ""; 
+      initialPositions[targetPos.x][targetPos.y] = initialPositions[currentPos.x][currentPos.y];
+      initialPositions[currentPos.x][currentPos.y] = ""; 
+
+      completedMoves[moveID] = true;
       setConstructedBoard(constructPositions());
+      return true;
+    }
+    return false;
   }
   
   function movePiece(currentLocation, targetLocation){ 
@@ -159,8 +189,8 @@ const Chessboard: React.FC = (): ReactElement => {
       return;
     }
 
-    // currentPositions[targetPos.x][targetPos.y] = currentPositions[currentPos.x][currentPos.y];
-    // currentPositions[currentPos.x][currentPos.y] = "";
+    // initialPositions[targetPos.x][targetPos.y] = initialPositions[currentPos.x][currentPos.y];
+    // initialPositions[currentPos.x][currentPos.y] = "";
     
     // setConstructedBoard(constructPositions()); 
 
@@ -169,31 +199,28 @@ const Chessboard: React.FC = (): ReactElement => {
   }
 
   function recieveMoves(validMoves){
-    currentHighlightedSpaces = validMoves;
-
     validMoves.forEach((i)=>{
       const el = document.getElementById( i.x  + " " + i.y );
       el.classList.add("moveglow");
     });
   }
 
-  let currentHighlightedSpaces = [];
-
   const clearHighlightedSquares = () => {
-    console.log("clearHighlightedSquares");
-    highlightActive = false;
-    currentHighlightedSpaces.forEach((i)=>{
-      let el = document.getElementById( i.x  + " " + i.y );
-      el.classList.remove("moveglow");
-    });
+    for(let i = 0; i < GRIDWIDTH; i ++){
+      for(let k = 0; k < GRIDWIDTH; k ++){
+        const el = document.getElementById( i + " " + k );
+        el.classList.remove("moveglow");
+          
+      }
+    }
   };
 
   // const getPieceFromCoords( org: {x: number, y: number} ){
-  //   const piece = currentPositions[org.y][org.x];
+  //   const piece = initialPositions[org.y][org.x];
   // };
   
   // const getPieceIDFromCoords( org: {x: number, y: number} ){
-  //   const piece = currentPositions[org.y][org.x];
+  //   const piece = initialPositions[org.y][org.x];
   // };
 
   const getValidMoves = (currentLocation) => {

@@ -131,7 +131,7 @@ wss.on('connection', function connection(ws) {
       const completed = gamelogic.movePiece(moveData);
 
       if(completed){
-        ws.send(JSON.stringify({command: "finishMove", completeTime: new Date(), location: inputCommands.location, target: inputCommands.target}));
+        ws.send(JSON.stringify({command: "finishMove", completeTime: new Date(), moveID: v4(), location: inputCommands.location, target: inputCommands.target}));
 
         // wss.clientseeee.forEach( (client) => {
         //   if(ws!=client){
