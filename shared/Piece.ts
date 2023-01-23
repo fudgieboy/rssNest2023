@@ -10,33 +10,33 @@ interface PieceProps{
 }
 
 const Piece:React.FC<PieceProps> = (props): ReactElement => {
-  let Piece: React.ElementType = getPieceFromType(props.pieceType, props.pieceColor); 
-  let outline:string;
-  let color:string;
-  let pos:string = props.boardPosition;
-  let underAttack:boolean = false;
-  let protectingKing:boolean = false;
-  let isChecking:boolean = false;
-  let direction:string = "";
+  // let Piece: React.ElementType = getPieceFromType(props.pieceType, props.pieceColor); 
+  // let outline:string;
+  // let color:string;
+  // let pos:string = props.boardPosition;
+  // let underAttack:boolean = false;
+  // let protectingKing:boolean = false;
+  // let isChecking:boolean = false;
+  // let direction:string = "";
 
-  if(props.pieceColor == "white"){
-    outline = "#000";
-    color = "#fff";
-    direction = "up";
-  } else {
-    outline = "#fff";
-    color = "#000";
-    direction = "down";
-  }
+  // if(props.pieceColor == "white"){
+  //   outline = "#000";
+  //   color = "#fff";
+  //   direction = "up";
+  // } else {
+  //   outline = "#fff";
+  //   color = "#000";
+  //   direction = "down";
+  // }
   
-  return (
-    <div id = "test" className = "piece" onDragStart = {(e)=>{ e.dataTransfer.setData("movingpiece", pos); }}
-                             onDragEnd = {(e)=>{}}   
-                             draggable="true">
+  // return (
+  //   <div id = "test" className = "piece" onDragStart = {(e)=>{ e.dataTransfer.setData("movingpiece", pos); }}
+  //                            onDragEnd = {(e)=>{}}   
+  //                            draggable="true">
 
-      <Piece  direction = {direction} outline = {outline} color = {color} />
-    </div>
-  );
+  //     <Piece  direction = {direction} outline = {outline} color = {color} />
+  //   </div>
+  // );
 };
 
 export default Piece;
