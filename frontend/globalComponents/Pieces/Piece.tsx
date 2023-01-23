@@ -1,7 +1,7 @@
 import React, { ReactElement, Component, useEffect, useState } from "react";
 import { v4 } from "uuid";
 import {getPieceFromType} from "./PieceTypes";
-import RCP from "react-chess-pieces";
+// import RCP from "react-chess-pieces";
 
 interface PieceProps{
   pieceType: string;

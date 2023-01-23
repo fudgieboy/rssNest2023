@@ -1,7 +1,7 @@
 import React, { ReactElement, Component, useEffect, useState } from "react";
 import { v4 } from "uuid";
-import {getPieceFromType} from "./PieceTypes";
-import RCP from "react-chess-pieces";
+import {getBehaviorFromType} from "./PieceTypes";
+// import RCP from "react-chess-pieces";
 
 interface PieceProps{
   pieceType: string;
@@ -9,7 +9,7 @@ interface PieceProps{
   boardPosition: string;
 }
 
-const Piece:React.FC<PieceProps> = (props): ReactElement => {
+const Piece = (props) => {
   // let Piece: React.ElementType = getPieceFromType(props.pieceType, props.pieceColor); 
   // let outline:string;
   // let color:string;
