@@ -12,7 +12,7 @@ import Gamelogic from './shared/gamelogic';
 import {createServer} from 'http';
 import {v4} from 'uuid';
 import WebSocket, {WebSocketServer} from 'ws';
-const PORT = process.env.PORT || 8081;
+const PORT = process.env.PORT + 1 || 8081;
 
 console.log("PORT");
 console.log(PORT);
