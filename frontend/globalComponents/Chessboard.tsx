@@ -11,9 +11,12 @@ import Gamelogic from "../../shared/gamelogic";
 let socket;
 let HOST;
 
+console.log(location);
+
+
 if(global.env === "production") { 
   HOST = location.origin.replace(/^http/, 'ws');
-  socket = new WebSocket(HOST, "protocolOne");
+  socket = new WebSocket(HOST + ":" + (location.port +1), "protocolOne");
 } else if (global.env == "development") {
   socket = new WebSocket('ws://localhost:8081', "protocolOne");
 }
