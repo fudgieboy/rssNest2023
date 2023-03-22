@@ -6,7 +6,7 @@ if(process.env.HEROKU == "true" || process.env.AWS ){
     var env = process.env; 
     config = {
         cookieSecret: env.COOKIE_SECRET,
-        curEnv: env.NODE_ENV,
+        curEnv: "production",
         aes:{
             secret: env.AES_SECRET,
             pass: env.AES_PASS
