@@ -7,7 +7,16 @@ import {getPieceFromType, PB} from "./Pieces/PieceTypes";
 import Gamelogic from "../../shared/gamelogic";
 //https://www.npmjs.com/package/react-chess-pieces
 
-const socket = new WebSocket('ws://localhost:8081', "protocolOne");
+
+let socket;
+let HOST;
+
+if(global.env === "production") { 
+  HOST = location.origin.replace(/^http/, 'ws');
+  socket = new WebSocket(HOST, "protocolOne");
+} else if (global.env == "development") {
+  socket = new WebSocket('ws://localhost:8081', "protocolOne");
+}
 
 enum orientation {
   black= "down",
@@ -20,7 +29,7 @@ const initialPositions: Array<string[]> = [
   ["rook black", "knight black", "bishop black", "queen black" , "king black", "bishop black", "knight black", "rook black"],
   ["pawn black", "pawn black", "pawn black", "pawn black", "pawn black", "pawn black", "pawn black", "pawn black"],
   ["", "", "", "", "", "", "", ""],
-  ["", "", "", "", "queen black", "", "", ""],
+  ["", "", "", "", "", "", "", "queen black"],
   ["", "", "", "", "", "", "", ""],
   ["", "", "", "", "", "", "", ""],
   ["pawn white", "pawn white", "pawn white", "pawn white", "pawn white", "pawn white", "pawn white", "pawn white"],
@@ -49,9 +58,6 @@ const Chessboard: React.FC = (): ReactElement => {
       let data;
       let inputCommands;
 
-      console.log("receive message");
-      console.log(event.data);
-
       try{
         data =  event.data.toString();
         inputCommands = JSON.parse(data);
@@ -62,10 +68,11 @@ const Chessboard: React.FC = (): ReactElement => {
       if(inputCommands && inputCommands.command == "receiveMoves"){
         recieveMoves(inputCommands.movelist);
       } else if(inputCommands && inputCommands.command == "finishForeignMove"){
+
         console.log("finishForeignMove");
+        
         finishForeignMove( inputCommands.location, inputCommands.target, inputCommands.moveID);
       } else if (inputCommands && inputCommands.command == "finishMove") {
-        console.log("finishMove");
         setDelayedEvents([...delayedEvents, inputCommands] ); 
       }
     };
@@ -83,8 +90,6 @@ const Chessboard: React.FC = (): ReactElement => {
   );
 
   function constructPositions() : Array<ReactElement[]> {
-    console.trace();
-    console.log("constructPositions");
     const positions: Array<ReactElement[]> = [];
     for(let i = 0; i < GRIDWIDTH; i ++){
       const arr:ReactElement[] = [];
@@ -119,7 +124,6 @@ const Chessboard: React.FC = (): ReactElement => {
               e.currentTarget.classList.remove("glow");
             }}
             onDrop = {(e)=>{
-              console.log('drop');
               clearHighlightedSquares();
               e.preventDefault();
               e.currentTarget.classList.remove("glow");
@@ -147,8 +151,6 @@ const Chessboard: React.FC = (): ReactElement => {
   const completedMoves = {};
   
   function finishMovePiece(currentLocation, targetLocation, moveID){ //probably should include pieceID
-
-    console.log(this);
     
     if(completedMoves[moveID] == undefined || completedMoves[moveID] == false){
 
@@ -199,6 +201,7 @@ const Chessboard: React.FC = (): ReactElement => {
   }
 
   function recieveMoves(validMoves){
+
     validMoves.forEach((i)=>{
       const el = document.getElementById( i.x  + " " + i.y );
       el.classList.add("moveglow");

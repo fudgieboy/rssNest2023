@@ -1,6 +1,29 @@
 import { v4 } from "uuid";
 import {getBehaviorFromType, PB} from "./PieceTypes";
 
+//rules
+//castling
+// you can only castle with your initial rooks and king
+//en passant
+//pawn promotion
+//check
+//check
+//cant castle out of check or through check
+// cant move into check
+//pinning
+//stalemate
+//draw by repetition
+//draw by insufficient material
+//draw by 50 move rule
+//draw by agreement
+//draw by time
+//draw by forfeit
+//draw by resignation
+//draw by adjudication
+//draw by insufficient mating material
+//can't move kings near each other
+//pinning pieces to king
+
 enum orientation{
   black = "down",
   white = "up"
@@ -65,7 +88,7 @@ const Gamelogic = () => {
     ["rook black", "knight black", "bishop black", "queen black" , "king black", "bishop black", "knight black", "rook black"],
     ["pawn black", "pawn black", "pawn black", "pawn black", "pawn black", "pawn black", "pawn black", "pawn black"],
     ["", "", "", "", "", "", "", ""],
-    ["", "", "", "", "queen black", "", "", ""],
+    ["", "", "", "", "", "", "", "queen black"],
     ["", "", "", "", "", "", "", ""],
     ["", "", "", "", "", "", "", ""],
     ["pawn white", "pawn white", "pawn white", "pawn white", "pawn white", "pawn white", "pawn white", "pawn white"],
@@ -75,7 +98,6 @@ const Gamelogic = () => {
   const initialPositions = JSON.parse(JSON.stringify(basicPositions));
 
   const resetGame = () => {
-    console.log("resetting game");
     whiteInCheck= false;
     blackInCheck= false;
     basicPositions = JSON.parse(JSON.stringify(initialPositions));
@@ -83,7 +105,6 @@ const Gamelogic = () => {
 };
 
   const constructPositions = () => {
-    console.log("constructPositions");
     const positionGrid: Array<Array<Chesspiece>> = [];
     for(let i = 0; i < GRIDWIDTH; i ++){
       const arr:Array<Chesspiece> = [];
@@ -111,9 +132,6 @@ const Gamelogic = () => {
           console.log("empty");
         }
       }
-      console.log("");
-      console.log("-------" + i + "-------");
-      console.log("");
     }
   };
  
@@ -130,7 +148,6 @@ const Gamelogic = () => {
   };
 
   const setPieceByCoords = (targetPos:Coords, val : Chesspiece|null)=>{
-    console.log("setPieceByCoords", targetPos, val);
     constructedPositions[targetPos.x][targetPos.y] = val;
   };
 
@@ -140,15 +157,7 @@ const Gamelogic = () => {
 
   const getValidMoves = (currentLocation:Coords) : Coords[] => {
     const currentPiece = getPieceByCoords({x: currentLocation.x, y:currentLocation.y});
-    const test = getPieceByCoords({x: 3, y:4});
-
-    if(test!=null){
-      console.log("queen hasnt moved");
-      console.log(test.pieceType);
-    }
-
     if(currentPiece==null){
-      console.log("currentPiece is null");
       return [];
     }
 
@@ -183,8 +192,8 @@ const Gamelogic = () => {
           maxRange = range.x;
       }
 
-      let forwardHit:boolean, backwardHit:boolean, rightWardHit:boolean, leftWardHit:boolean;
-      forwardHit = backwardHit = rightWardHit = leftWardHit = false;
+      let forwardHit:boolean, backwardHit:boolean, downwardHit:boolean, upwardHit:boolean;
+      forwardHit = backwardHit = downwardHit = upwardHit = false;
       let i:number, j:number, k:number, l: number;
       const curPos = currentPiece.getBoardPosition();
       const current = {x:curPos[0], y:curPos[1]};
@@ -193,10 +202,8 @@ const Gamelogic = () => {
       k = l = current.x;
       let fpos:string, bpos:string, kpos:string, lpos:string;
       
-      while(!forwardHit || !backwardHit || !rightWardHit || !leftWardHit){
-        const maxX = Math.abs(i) - current.x;
-        const maxY = Math.abs(i) - current.y;
-        if(maxX < maxRange && i != current.y  && !forwardHit){ 
+      while(!forwardHit || !backwardHit || !downwardHit || !upwardHit){
+        if(i != current.y  && !forwardHit){ //rightward
           fpos = basicPositions[current.x][i]; 
           if(fpos.length){
             forwardHit = true;
@@ -205,8 +212,12 @@ const Gamelogic = () => {
         }
         i = i+1;
 
-        if(maxX < maxRange && j != current.y && !backwardHit){
+        // maxX causing it to end early
+        if(j != current.y && !backwardHit){ //leftward
           bpos = basicPositions[current.x][j]; 
+
+          console.log(bpos);
+          
           if(bpos.length){
             backwardHit = true;
           }
@@ -214,19 +225,19 @@ const Gamelogic = () => {
         }
         j = j-1;
 
-        if(maxY < maxRange && k != current.x && !rightWardHit){
+        if(k != current.x && !downwardHit){ //downward
           kpos = basicPositions[k][current.y]; 
           if(kpos.length){
-            rightWardHit = true;
+            downwardHit = true;
           } 
           positions.push({ x: k, y:current.y });
         }
         k = k+1;
 
-        if(maxY < maxRange  && l != current.x && !leftWardHit){
+        if(l != current.x && !upwardHit){ // upward
           lpos = basicPositions[l][current.y]; 
           if(lpos.length){
-            leftWardHit = true;
+            upwardHit = true;
           }
           positions.push({ x: l, y:current.y });
         }
@@ -239,10 +250,10 @@ const Gamelogic = () => {
           backwardHit = true;
         }
         if(k == GRIDWIDTH){
-          rightWardHit = true;
+          downwardHit = true;
         }
         if(l == -1){
-          leftWardHit = true;
+          upwardHit = true;
         }
       } 
       return positions;
@@ -254,21 +265,21 @@ const Gamelogic = () => {
       const x = current.x;
       const y = current.y;
       
-      if( x+1 < GRIDWIDTH && y +3 < GRIDWIDTH){
+      if( x+1 < GRIDWIDTH && y + 2 < GRIDWIDTH){
         positions.push({ x: x+1,  y: y+2 });
       }
 
-      if( x-1 >= 0 && y+3 < GRIDWIDTH){
+      if( x-1 >= 0 && y+2 < GRIDWIDTH){
         positions.push({ x: x-1,  y: y+2 });
       }
 
-      if( x+1 < GRIDWIDTH && y-1 >= 0){
+      if( x+1 < GRIDWIDTH && y-2 >= 0){
         positions.push({ x: x+1,  y: y-2 });
       }
 
-      if( x-1 >= 0 && y-1 >= 0){
-        positions.push({ x: x-1,  y: y-2 });
-      }
+      // if( x-1 >= 0 && y-2 >= 0){
+      //   positions.push({ x: x-1,  y: y-2 });
+      // }
 
       if( x-2 >= 0 && y-1 >= 0){
         positions.push({ x: x-2,  y: y-1});
@@ -352,19 +363,22 @@ const Gamelogic = () => {
               }
               positions.push({ x:x+i,  y:y-i});
             }
-            if(x+i < GRIDWIDTH && y-i >= 0 && !bl){
-              const pos = basicPositions[x+i][y-i]; 
-              if(pos.length){
-                bl = true;
-              }
-              positions.push({ x:x-i,  y:y+i});
-            }
             if(x-i >= 0 && y-i >= 0 && !tl){
               const pos = basicPositions[x-i][y-i]; 
               if(pos.length){
                 tl = true;
               }
               positions.push({ x:x-i,  y:y-i });
+            }
+            if(x-i >= 0 && y+i < GRIDWIDTH && !bl){
+              const pos = basicPositions[x-i][y+i]; 
+
+              console.log(pos);
+              
+              if(pos.length){
+                bl = true;
+              }
+              positions.push({ x:x-i,  y:y+i});
             }
           }
         }
@@ -373,7 +387,6 @@ const Gamelogic = () => {
     };
 
     if(range.constraint === PB.omnidirectional ){
-      console.log("setting omnidirectional");
       validPositions = getValidLaterals(validPositions, range);
       validPositions = getValidDiagonals(validPositions, range);
     } else if (range.constraint === PB.horsey){
@@ -389,10 +402,6 @@ const Gamelogic = () => {
   };
   
   const movePiece = (moveData):boolean =>{
-
-    console.log("movePiece called");
-    console.log(moveData);
-    
     const piece = getPieceByID(moveData.location);
     const targetPiece = getPieceByID(moveData.target);
 
@@ -420,7 +429,6 @@ const Gamelogic = () => {
         return true;
       }
     } else {
-      console.log("piece is null");
       return false;
     }
     return false;

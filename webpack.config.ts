@@ -69,7 +69,7 @@ module.exports = {
             options: {
               cacheDirectory: true,
               presets: [
-                "@babel/preset-react", 
+                ["@babel/preset-react", {"runtime": "automatic"}],
                 ["@babel/preset-env", {"targets": {"node": 4}}], 
                 ["@babel/preset-typescript", {isTSX: true, allExtensions: true, jsxPragma: "React"}]],
               plugins: [

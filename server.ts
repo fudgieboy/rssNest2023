@@ -12,11 +12,15 @@ import Gamelogic from './shared/gamelogic';
 import {createServer} from 'http';
 import {v4} from 'uuid';
 import WebSocket, {WebSocketServer} from 'ws';
+const PORT = process.env.PORT || 8081;
+
+console.log("PORT");
+console.log(PORT);
 
 //https://developer.mozilla.org/en-US/docs/Web/API/WebSocket/WebSocket
 const app = express();
 const server = createServer();
-const wss = new WebSocketServer({ port: 8081 });
+const wss = new WebSocketServer({ port: PORT });
 
 require("@babel/register")({extensions: [".js", ".ts"]});
 
@@ -133,16 +137,14 @@ wss.on('connection', function connection(ws) {
       if(completed){
         ws.send(JSON.stringify({command: "finishMove", completeTime: new Date(), moveID: v4(), location: inputCommands.location, target: inputCommands.target}));
 
-        // wss.clientseeee.forEach( (client) => {
-        //   if(ws!=client){
-        //     client.send(JSON.stringify({command: "finishForeignMove", location: inputCommands.location, target: inputCommands.target}));
-        //   }
-        // });
+        wss.clients.forEach( (client) => {
+          if(ws!=client){
+            client.send(JSON.stringify({command: "finishForeignMove", location: inputCommands.location, target: inputCommands.target}));
+          }
+        });
       }
     }
   });
-
-
 
   ws.send('connection initialized');
 });
