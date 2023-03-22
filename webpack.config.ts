@@ -19,6 +19,7 @@ if(curEnv == "development"){
 }
 
 console.log("Current Environment: " + curEnv);
+console.log("Environment: " + process.env.HEROKU);
 
 module.exports = {
     mode: curEnv,
