@@ -1,7 +1,7 @@
 // const StylelintPlugin = require("stylelint-webpack-plugin");
 import HtmlWebpackPlugin from "html-webpack-plugin";
 const config = require("./apiKeys");
-const curEnv = config.curEnv;
+const curEnv = process.env.NODE_ENV || config.curEnv;
 import path from "path";
 import webpack from "webpack";
 import pkg from "./package.json";
