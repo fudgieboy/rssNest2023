@@ -12,15 +12,14 @@ import Gamelogic from './shared/gamelogic';
 import {createServer} from 'http';
 import {v4} from 'uuid';
 import WebSocket, {WebSocketServer} from 'ws';
-const PORT = process.env.PORT + 1 || 8081;
+const PORT = process.env.PORT || 8081;
 
 console.log("PORT");
-console.log(PORT);
 
 //https://developer.mozilla.org/en-US/docs/Web/API/WebSocket/WebSocket
 const app = express();
 const server = createServer();
-const wss = new WebSocketServer({ port: PORT });
+const wss = new WebSocketServer({ port: PORT + 1});
 
 require("@babel/register")({extensions: [".js", ".ts"]});
 
@@ -73,7 +72,9 @@ console.log("curEnv" + " " + curEnv);
 console.log("__dirname" + " " + __dirname);
 
 app.get("/", (req,res) => {
-  res.render(path.resolve(__dirname, dirPrefix + "dist", "index.ejs"), {});
+  res.render(path.resolve(__dirname, dirPrefix + "dist", "index.ejs"), {
+    socketPort: PORT
+  });
 });
 
 // app.use(require("./backend/list/listRoutes"));

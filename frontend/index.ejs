@@ -11,7 +11,9 @@
     <link rel="manifest" href="manifest.json" crossorigin="use-credentials" /> 
     <title><%=htmlWebpackPlugin.options.title%></title>
   </head>
+
   <script>
+    window.socketPort = <?-socketPort?>;
   </script>
   
   <body>

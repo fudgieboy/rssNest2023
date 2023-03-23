@@ -3,8 +3,6 @@ const tryRequire = require("try-require");
 var config;
 
 if(process.env.HEROKU || process.env.AWS ){
-    console.log("Anybody home?");
-    
     var env = process.env; 
     config = {
         cookieSecret: env.COOKIE_SECRET,
