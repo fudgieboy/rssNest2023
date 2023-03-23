@@ -21,6 +21,8 @@ const app = express();
 const server = createServer();
 const wss = new WebSocketServer({ port: PORT + 1});
 
+console.log(`***WS port on ${PORT + 1}`);
+
 require("@babel/register")({extensions: [".js", ".ts"]});
 
 const port = process.env.PORT || 8080;
