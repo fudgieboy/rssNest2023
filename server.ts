@@ -20,7 +20,7 @@ console.log(`***WS port on ${PORT + 1}`);
 //https://developer.mozilla.org/en-US/docs/Web/API/WebSocket/WebSocket
 const app = express();
 const server = createServer();
-const wss = new WebSocketServer({ port: parseInt(PORT) + 1});
+const wss = new WebSocketServer({ port: PORT });
 
 require("@babel/register")({extensions: [".js", ".ts"]});
 
