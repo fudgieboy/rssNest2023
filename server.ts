@@ -11,20 +11,32 @@ import ejs from "ejs";
 import Gamelogic from './shared/gamelogic';
 import {createServer} from 'http';
 import {v4} from 'uuid';
-import WebSocket, {WebSocketServer} from 'ws';
-const PORT = process.env.PORT || 8081;
+import {WebSocketServer} from 'ws';
+const winston = require('winston');
+const port = 8080;
 
-console.log("PORT");
-console.log(`***WS port on ${PORT + 1}`);
+const WSPORT = 8081;
 
-//https://developer.mozilla.org/en-US/docs/Web/API/WebSocket/WebSocket
+console.log(`***WS port on ${WSPORT + 1}`);
+console.log(`***WS port is ${typeof(WSPORT)}`);
+
+const logConfiguration = {
+  'transports': [
+      new winston.transports.Console(),
+      new winston.transports.File({
+        filename: 'logs/mainLog.txt'
+      })
+  ]
+};
+
+const logger = winston.createLogger(logConfiguration);
+
 const app = express();
 const server = createServer();
-const wss = new WebSocketServer({ port: PORT });
+const wss = new WebSocketServer({ port: WSPORT });
 
 require("@babel/register")({extensions: [".js", ".ts"]});
 
-const port = process.env.PORT || 8080;
 const curEnv = config.curEnv;
 const dev = (curEnv === "development");
 require("pretty-error").start();
@@ -58,23 +70,39 @@ app.use(function(req, res, next) {
     req.headers["x-access-token"] ||
     req.cookies.token;
 
-  !utils.n(encodedToken)? req.userToken = jwtHelper.verifyLoginToken(encodedToken):null;
+  // !utils.n(encodedToken)? req.userToken = jwtHelper.verifyLoginToken(encodedToken):null;
  
   next();
 });
 
+console.log("curEnv: " + curEnv);
+
 let dirPrefix = "build/";
-if((process.env.HEROKU === "true" && curEnv === "production") || (__dirname.indexOf("build")!= -1)){//shouldn't need this anymore
-  dirPrefix = ""; //if we are on heroku its starting from inside build folder already
+if(curEnv == "production"){
+  dirPrefix = "";
 }
 
-console.log("process.env.HEROKU" + " " + process.env.HEROKU);
-console.log("curEnv" + " " + curEnv);
-console.log("__dirname" + " " + __dirname);
-
 app.get("/", (req,res) => {
+
+  logger.log({
+    message: "This is bullshit",
+    level: 'info'
+  });
+
   res.render(path.resolve(__dirname, dirPrefix + "dist", "index.ejs"), {
-    socketPort: PORT
+    socketPort: WSPORT
+  });
+});
+
+app.get("/test", (req,res) => {
+
+  logger.log({
+    message: "This is bullshit",
+    level: 'info'
+  });
+  
+  res.render(path.resolve(__dirname, dirPrefix + "dist", "index.ejs"), {
+    socketPort: WSPORT
   });
 });
 
@@ -83,8 +111,11 @@ app.get("/", (req,res) => {
 
 console.log("starting app...");
 
+// const address = (config.curEnv == "production")? '3.232.19.78': '127.0.0.1';
+const address = '127.0.0.1';
+
 app.listen(port, () => {
-  console.log(colors.yellow(`Listening to app on server port ${port} in ${curEnv} mode`));
+  console.log(colors.yellow(`Listening to app on ${port} in ${curEnv} mode`));
 });
 
 const gamelogic = Gamelogic();
@@ -100,7 +131,6 @@ wss.on('connection', function connection(ws) {
         ws.terminate();
         console.log("terminating");
     }, 500);
-    
       
     let curSize = wss.clients.size;
     if(curSize < 2){

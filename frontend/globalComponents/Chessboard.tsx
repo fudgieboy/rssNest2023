@@ -11,16 +11,13 @@ import Gamelogic from "../../shared/gamelogic";
 let socket;
 let HOST;
 
-console.log(window.socketPort);
-
+//https://stackoverflow.com/questions/37636580/heroku-node-js-i-have-a-server-which-uses-multiple-ports-how-can-i-get-herok
 if(global.env !== "development") { 
   HOST = location.origin.replace(/^http/, 'ws');
 
-  console.log(HOST);
-  
   socket = new WebSocket(HOST + ":" + (window.socketPort), "protocolOne");
 } else {
-  socket = new WebSocket('ws://localhost:8082', "protocolOne");
+  socket = new WebSocket('ws://localhost:8081', "protocolOne");
 }
 
 

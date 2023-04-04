@@ -1,7 +1,7 @@
 // const StylelintPlugin = require("stylelint-webpack-plugin");
 import HtmlWebpackPlugin from "html-webpack-plugin";
-const config = require("./apiKeys");
-const curEnv = process.env.NODE_ENV || config.curEnv;
+const keys = require("./apiKeys");
+const curEnv = (process.env.NODE_ENV || keys.config.curEnv);
 import path from "path";
 import webpack from "webpack";
 import pkg from "./package.json";
@@ -17,9 +17,6 @@ if(curEnv == "development"){
 } else {
   devtool = "source-map";
 }
-
-console.log("Current Environment: " + curEnv);
-console.log("Environment: " + process.env.HEROKU);
 
 module.exports = {
     mode: curEnv,
