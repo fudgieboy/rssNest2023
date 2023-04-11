@@ -17,6 +17,8 @@ $headerHeight: 60px;
 $commonMargin: 16px;
 $smallMargin: 5px;
 
+$mainColor: black;
+
 #videogrid{
     display: grid;grid-template-columns: repeat(auto-fill, 300px);
     grid-auto-rows: 300px;
@@ -61,7 +63,7 @@ video{
     height: 100%;
     margin: auto;
     padding-top: 100px;
-     
+    position: relative;
 }
 
 button, input[type=submit], input[type=file]::file-selector-button{
@@ -69,7 +71,7 @@ button, input[type=submit], input[type=file]::file-selector-button{
     padding: $smallMargin;
     text-transform: uppercase;
     color: $white;
-    background-color: $black;
+    background-color: $mainColor;
     border: 0px;
 }
 
@@ -166,7 +168,7 @@ button, input[type=submit], input[type=file]::file-selector-button{
     left: 0px;
     top: 0px;
     height: $headerHeight;
-    background-color: $black;
+    background-color: $mainColor;
 }
 
 .postItem{
@@ -267,8 +269,8 @@ input[type=number] {
 
     
 #board{
-    // height: 40vw;
-    // width: 40vw;
+    display: block;
+    position: relative;
     height: calc(20vw + 20vh);
     width: calc(20vw + 20vh);
 }
@@ -289,4 +291,12 @@ input[type=number] {
             }
         }
     }
+}
+
+#leftBar{
+    width: 200px;
+    height: 100%;
+    position: relative;
+    display: block;
+    background-color: $mainColor;
 }

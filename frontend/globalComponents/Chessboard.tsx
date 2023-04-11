@@ -1,21 +1,22 @@
 import React, { ReactElement, useState, useEffect} from "react";
 import { v4 } from "uuid";
 import Chesspiece from "./Pieces/Piece";
-import TodoListStore from "../stores/TodoListStore";
-import LocalStore from "../stores/LocalStore";
-import {getPieceFromType, PB} from "./Pieces/PieceTypes";
+// import TodoListStore from "../stores/TodoListStore";
+// import LocalStore from "../stores/LocalStore";
+// import {getPieceFromType, PB} from "./Pieces/PieceTypes";
 import Gamelogic from "../../shared/gamelogic";
 //https://www.npmjs.com/package/react-chess-pieces
 
 
 let socket;
-let HOST;
+let HOST = window.location.host.split(":");
 
-//https://stackoverflow.com/questions/37636580/heroku-node-js-i-have-a-server-which-uses-multiple-ports-how-can-i-get-herok
+HOST = "ws://" + HOST[0] + ":" + "8081";
+
+console.log(location);
+
 if(global.env !== "development") { 
-  HOST = location.origin.replace(/^http/, 'ws');
-
-  socket = new WebSocket(HOST + ":" + (window.socketPort), "protocolOne");
+  socket = new WebSocket(HOST, "protocolOne");
 } else {
   socket = new WebSocket('ws://localhost:8081', "protocolOne");
 }
@@ -108,8 +109,8 @@ const Chessboard: React.FC = (): ReactElement => {
             id = {i +" " + k}
             onDragEnter = {(e)=>{
               if(!highlightActive){
-                highlightActive = true;
-                e.currentTarget.classList.add("glow");
+                // highlightActive = true;
+                // e.currentTarget.classList.add("glow");
                 const movingPiece = e.dataTransfer.getData("movingpiece");
                 const targ = e.currentTarget.id;
                 const orgCords = {x: movingPiece[0], y: movingPiece[2]};
@@ -127,7 +128,7 @@ const Chessboard: React.FC = (): ReactElement => {
               e.currentTarget.classList.remove("glow");
             }}
             onDrop = {(e)=>{
-              clearHighlightedSquares();
+              // clearHighlightedSquares();
               e.preventDefault();
               e.currentTarget.classList.remove("glow");
               const movingPiece = e.dataTransfer.getData("movingpiece");
@@ -177,7 +178,6 @@ const Chessboard: React.FC = (): ReactElement => {
   }
   
   function movePiece(currentLocation, targetLocation){ 
-    console.log("movePiece");
     const moveTime:Date = new Date();
 
     const targetPos = {x: 0, y: 0};
@@ -190,7 +190,6 @@ const Chessboard: React.FC = (): ReactElement => {
     currentPos.y = currentLocation[2];
 
     if(currentPos.x === targetPos.x && currentPos.y === targetPos.y){
-      console.log("piece not moved");
       return;
     }
 
@@ -204,11 +203,10 @@ const Chessboard: React.FC = (): ReactElement => {
   }
 
   function recieveMoves(validMoves){
-
-    validMoves.forEach((i)=>{
-      const el = document.getElementById( i.x  + " " + i.y );
-      el.classList.add("moveglow");
-    });
+    // validMoves.forEach((i)=>{
+    //   const el = document.getElementById( i.x  + " " + i.y );
+    //   el.classList.add("moveglow");
+    // });
   }
 
   const clearHighlightedSquares = () => {
@@ -230,7 +228,6 @@ const Chessboard: React.FC = (): ReactElement => {
   // };
 
   const getValidMoves = (currentLocation) => {
-    console.log("getting valid moves");
     const content = {command: "getValidMoves", location: currentLocation};
     socket.send(JSON.stringify(content));
   };

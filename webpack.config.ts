@@ -12,11 +12,15 @@ const SHARED = path.resolve(__dirname, "shared");
 
 let devtool =  "";
 
-if(curEnv == "development"){
-  devtool = "inline-source-map";
-} else {
-  devtool = "source-map";
-}
+// if(curEnv == "development"){
+  // devtool = "inline-source-map";
+  devtool = "eval-source-map";
+// } else {
+  // devtool = "source-map";
+// }
+
+
+console.log(curEnv);
 
 module.exports = {
     mode: curEnv,
@@ -181,10 +185,6 @@ module.exports = {
     //     "react-dom": "ReactDOM"
     // },
     plugins: [
-      new webpack.DefinePlugin({
-        'process.env.name': JSON.stringify('Vishwas'),
-      }),
-
       new HtmlWebpackPlugin({
         filename: __dirname + "/build/dist/index.ejs",
         template: __dirname + "/frontend/index.ejs",
@@ -193,7 +193,7 @@ module.exports = {
         title: pkg.name
       }),
       new webpack.DefinePlugin({
-        "global.env": JSON.stringify(process.env.NODE_ENV), //these are frontend globals
+        "global.env": JSON.stringify(curEnv), //these are frontend globals
       })
     ]
 };

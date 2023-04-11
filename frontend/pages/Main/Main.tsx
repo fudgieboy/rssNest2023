@@ -62,8 +62,10 @@ const Main: React.FC = () : ReactElement => {
               {/* <li><Link to = "/projects">Contact</Link></li> */}
               {/* <li><Link to = "/apps">Location</Link></li> */}
             </ul>
-          </div>  
-            <Chessboard />
+          </div>
+          <div id = "leftBar">
+          </div>
+          <Chessboard />
           {/* <div id = "loginFormsContainer">
             <div className = {loginInnerContainerClasses} >
               {!unmountLoginForms ? <Register hideSelf = {hideLoginForms} showSelf = {revealLoginForms} /> :null}

@@ -85,7 +85,7 @@ if(curEnv == "production"){
 app.get("/", (req,res) => {
 
   logger.log({
-    message: "This is bullshit",
+    message: "Testing index route",
     level: 'info'
   });
 
@@ -97,7 +97,7 @@ app.get("/", (req,res) => {
 app.get("/test", (req,res) => {
 
   logger.log({
-    message: "This is bullshit",
+    message: "testing test route",
     level: 'info'
   });
   
@@ -112,7 +112,6 @@ app.get("/test", (req,res) => {
 console.log("starting app...");
 
 // const address = (config.curEnv == "production")? '3.232.19.78': '127.0.0.1';
-const address = '127.0.0.1';
 
 app.listen(port, () => {
   console.log(colors.yellow(`Listening to app on ${port} in ${curEnv} mode`));

@@ -23,6 +23,7 @@ import {getBehaviorFromType, PB} from "./PieceTypes";
 //draw by insufficient mating material
 //can't move kings near each other
 //pinning pieces to king
+//double check
 
 enum orientation{
   black = "down",
@@ -215,9 +216,6 @@ const Gamelogic = () => {
         // maxX causing it to end early
         if(j != current.y && !backwardHit){ //leftward
           bpos = basicPositions[current.x][j]; 
-
-          console.log(bpos);
-          
           if(bpos.length){
             backwardHit = true;
           }
@@ -372,8 +370,6 @@ const Gamelogic = () => {
             }
             if(x-i >= 0 && y+i < GRIDWIDTH && !bl){
               const pos = basicPositions[x-i][y+i]; 
-
-              console.log(pos);
               
               if(pos.length){
                 bl = true;
