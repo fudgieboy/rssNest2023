@@ -1,6 +1,6 @@
 import React, {ReactElement, Component, useEffect, useState} from "react";
-import {BrowserRouter as Router, Route, Redirect, Switch, Link} from "react-router-dom";
-import LocalStore from "../../stores/LocalStore";
+import { Route, Routes } from 'react-router-dom';
+// import LocalStore from "../../stores/LocalStore";
 import Chessboard from "../../globalComponents/Chessboard"; 
 
 const Main: React.FC = () : ReactElement => {
@@ -56,14 +56,37 @@ const Main: React.FC = () : ReactElement => {
       <div id = "main">
           <div id = "header">
             <h1>Chess</h1>
-            <ul >
-              {/* <li><Link to = "/blog">Interactive Body Map</Link></li> */}
-              {/* <li><Link to = "/projects">Schedule Appointment</Link></li> */}
-              {/* <li><Link to = "/projects">Contact</Link></li> */}
-              {/* <li><Link to = "/apps">Location</Link></li> */}
-            </ul>
           </div>
           <div id = "leftBar">
+            {/* <Routes> */}
+              {/* <Route path = "/newgame"  element = {<Chessboard/>}>New Game</Route>
+              <Route path = "/watch">Watch</Route>
+              <Route path = "/chat">Chat</Route>
+              <Route path = "/famousgames">Famous Games</Route>
+              <Route path = "/puzzles">Puzzles</Route>
+              <Route path = "/playbot">Play a bot</Route>
+              <Route path = "/petbot">Build a Bot</Route>
+              <Route path = "/custom">Custom Rules</Route> */}
+              {/* <Route path = "/newgame"  element = {<Chessboard/>}>New Game</Route>
+              <Route path = "/watch">Watch</Route>
+              <Route path = "/chat">Chat</Route>
+              <Route path = "/famousgames">Famous Games</Route>
+              <Route path = "/puzzles">Puzzles</Route>
+              <Route path = "/playbot">Play a bot</Route>
+              <Route path = "/petbot">Build a Bot</Route>
+              <Route path = "/custom">Custom Rules</Route> */}
+
+              <ul>
+                <li><a href= "#">New Game</a></li>
+                <li><a>Watch</a></li>
+                <li><a>Chat</a></li>
+                <li><a>Famous Games</a></li>
+                <li><a>Puzzles</a></li>
+                <li><a>Play a bot</a></li>
+                <li><a>Build a Bot</a></li>
+                <li><a>Custom Rules</a></li>
+              </ul>
+            {/* </Routes> */}
           </div>
           <Chessboard />
           {/* <div id = "loginFormsContainer">

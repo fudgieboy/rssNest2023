@@ -5,22 +5,23 @@ import Chesspiece from "./Pieces/Piece";
 // import LocalStore from "../stores/LocalStore";
 // import {getPieceFromType, PB} from "./Pieces/PieceTypes";
 import Gamelogic from "../../shared/gamelogic";
-//https://www.npmjs.com/package/react-chess-pieces
 
 
 let socket;
-let HOST = window.location.host.split(":");
+let WSHOST = window.location.host.split(":");
+WSHOST = "ws://" + WSHOST[0] + ":" + "8081";
 
-HOST = "ws://" + HOST[0] + ":" + "8081";
-
-console.log(location);
+console.log(WSHOST);
 
 if(global.env !== "development") { 
-  socket = new WebSocket(HOST, "protocolOne");
+  socket = new WebSocket(WSHOST, "protocolOne");
 } else {
   socket = new WebSocket('ws://localhost:8081', "protocolOne");
 }
 
+socket.onopen = ()=>{
+  console.log("socket opened");
+}
 
 enum orientation {
   black= "down",
