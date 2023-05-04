@@ -1,3 +1,1 @@
-# Chess
- 
-//stop installing webpack types it breaks deployment
+react version of rssnest
