@@ -6,7 +6,7 @@ import {config} from "../../apiKeys";
 const curEnv = config.curEnv;
 const dev = (curEnv === "development");
 
-let l, e, tr, n;
+let l, e, tr;
 
 if(dev){
   // const prima = require('esprima');
@@ -30,7 +30,7 @@ if(dev){
   tr = l = e = console.log = ()=>{};
 }
 
-n = (val)=>{
+const n = (val)=>{
   return (val === undefined || val === null);
 };
 

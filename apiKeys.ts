@@ -6,7 +6,7 @@ if( ((process.env.HEROKU || process.env.AWS) === "true") || (__dirname.indexOf("
     var env = process.env; 
     config = {
         cookieSecret: env.COOKIE_SECRET,
-        curEnv: "production",
+        curEnv: "development",
         aes:{
             secret: env.AES_SECRET,
             pass: env.AES_PASS

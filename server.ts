@@ -6,19 +6,9 @@ import bodyParser from "body-parser";
 import cookieParser from "cookie-parser";
 import morgan from "morgan";
 import * as jwtHelper from "./backend/utils/jwtHelper";
-import * as utils from "./backend/utils/misc";
 import ejs from "ejs";
-import Gamelogic from './shared/gamelogic';
-import {createServer} from 'http';
-import {v4} from 'uuid';
-import {WebSocketServer} from 'ws';
 const winston = require('winston');
 const port = 8080;
-
-const WSPORT = 8081;
-
-console.log(`***WS port on ${WSPORT + 1}`);
-console.log(`***WS port is ${typeof(WSPORT)}`);
 
 const logConfiguration = {
   'transports': [
@@ -32,8 +22,6 @@ const logConfiguration = {
 const logger = winston.createLogger(logConfiguration);
 
 const app = express();
-const server = createServer();
-const wss = new WebSocketServer({ port: WSPORT });
 
 require("@babel/register")({extensions: [".js", ".ts"]});
 
@@ -83,14 +71,8 @@ if(curEnv == "production"){
 }
 
 app.get("/", (req,res) => {
-
-  logger.log({
-    message: "Testing index route",
-    level: 'info'
-  });
-
   res.render(path.resolve(__dirname, dirPrefix + "dist", "index.ejs"), {
-    socketPort: WSPORT
+    socketPort: 5000
   });
 });
 
@@ -102,12 +84,12 @@ app.get("/test", (req,res) => {
   });
   
   res.render(path.resolve(__dirname, dirPrefix + "dist", "index.ejs"), {
-    socketPort: WSPORT
+    socketPort: 5000
   });
 });
 
-// app.use(require("./backend/list/listRoutes"));
-// app.use(require("./backend/users/userRoutes"));
+app.use(require("./backend/list/listRoutes"));
+app.use(require("./backend/users/userRoutes"));
 
 console.log("starting app...");
 
@@ -115,69 +97,6 @@ console.log("starting app...");
 
 app.listen(port, () => {
   console.log(colors.yellow(`Listening to app on ${port} in ${curEnv} mode`));
-});
-
-const gamelogic = Gamelogic();
-
-wss.on('connection', function connection(ws) {
-
-  ws.binaryType = 'arraybuffer';
-  ws.send(JSON.stringify({command: "initUser", newUserID: v4()}));
-
-  ws.onclose = () => {
-
-    setTimeout(() => {
-        ws.terminate();
-        console.log("terminating");
-    }, 500);
-      
-    let curSize = wss.clients.size;
-    if(curSize < 2){
-      console.log("game reset");
-      gamelogic.resetGame();
-      ws.send(JSON.stringify({command: "resetGame"}));
-    }
-    
-    wss.clients.forEach( (client) => {
-      if(ws!=client){
-          client.send("closed");
-      }
-    });
-  };
-
-  ws.on('message', function message(data) {
-    console.log("user connected");
-    
-    const inputCommands = JSON.parse(data.toString());
-
-    if(inputCommands.command == "getValidMoves"){
-      const moves = gamelogic.getValidMoves(inputCommands.location);
-      ws.send(JSON.stringify({command: "receiveMoves", movelist: moves}));
-    }
-    
-    if(inputCommands.command == "movePiece"){
-      const moveTime = new Date(inputCommands.moveTime);
-      const moveData = {
-              location: inputCommands.location, 
-              target: inputCommands.target, 
-              moveTime: moveTime
-      };
-      
-      const completed = gamelogic.movePiece(moveData);
-
-      if(completed){
-        ws.send(JSON.stringify({command: "finishMove", completeTime: new Date(), moveID: v4(), location: inputCommands.location, target: inputCommands.target}));
-
-        wss.clients.forEach( (client) => {
-          if(ws!=client){
-            client.send(JSON.stringify({command: "finishForeignMove", location: inputCommands.location, target: inputCommands.target}));
-          }
-        });
-      }
-    }
-  });
-
-  ws.send('connection initialized');
 });
 
 export {};

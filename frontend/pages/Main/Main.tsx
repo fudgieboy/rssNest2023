@@ -1,105 +1,144 @@
-import React, {ReactElement, Component, useEffect, useState} from "react";
-import { Route, Routes } from 'react-router-dom';
-// import LocalStore from "../../stores/LocalStore";
-import Chessboard from "../../globalComponents/Chessboard"; 
+import React, {ReactElement, useEffect, useState, useRef} from "react";
+import RSSList from "../../globalComponents/RSSList"; 
+import Leftbar from "../../globalComponents/Leftbar"; 
+import Rightbar from "../../globalComponents/Rightbar"; 
 
 const Main: React.FC = () : ReactElement => {
-  // const [loggedIn, setLoggedIn] = useState<boolean>(LocalStore.store.getLoggedIn());
-  // const [unmountLoginForms, setUnmountLoginForms] = useState<boolean>(LocalStore.store.getLoggedIn());
-                 
-  // const updateLoggedInStatus = (loggedIn:boolean):void=>{
-  //   setLoggedIn(loggedIn);
-  // };
+  
+  //add leftbar scope.watches as useEffects
+  // useEffect(() => { 
+    
+  // }, []);
 
-  // const updateMountStatus = (mount:boolean):void =>{
-  //   setUnmountLoginForms(mount);
-  // };
+  const checkLoginStatus = () => {
+  };  
 
-  // const revealLoginForms = (delay:number):void => { 
-  //   setTimeout(()=>{
-  //     updateLoggedInStatus(false);
-  //     updateMountStatus(false);
-  //   }, delay);
-  // };
+  const deleteStorage = () => {
+    checkLoginStatus();
+  };  
 
-  // const hideLoginForms = (showDelayTime:number):void=>{
-  //   updateLoggedInStatus(true);
-
-  //   setTimeout(()=>{
-  //     updateMountStatus(true);
-  //   }, 1000); //1000 is the scss animation time
-
-  //   revealLoginForms(showDelayTime);
-  // };
-
-  // useEffect(()=>{
-  //   if(LocalStore.store.getLoggedIn()){
-  //     revealLoginForms(LocalStore.store.getLoginExpiryTime());
+  // const updateFromStorage = () => {
+  //   if(allowLocalStorage){
+  //     this.setFolders(angular.fromJson(localStorage.rssNESTFolders))
   //   }
-  // }, []);
+  // };
+  
 
-  // useEffect(() => {
-  //   const intervalId = setInterval(() => {
-  //     document.title = `Time is: ${new Date()}`;
-  //   }, 1000);
+  const updateFromStorage = () => {
+    // if(allowLocalStorage){
+    //   this.setFolders(angular.fromJson(localStorage.rssNESTFolders))
+    // }
+  };
+  
+  const updateSaveOption = () => {
+    // allowLocalStorage = value;
+    // localStorage.allowLocalStorage = allowLocalStorage;
+  };
+  
+
+  const clearRenamingAll =  () => {
+  };
+  
+  const getFolders =  () => {
+
+  };
+  
+  const getSelectedFolder =  () => {
+  };
+
+  const setSelectedFolder =  () => {
+  };
+
+  const setSelectedSub =  () => {
+
+  };
+
+  const updateFeed =  () => {
+  };
+
+  const setCurrentFolder =  () => {
+  };
+
+  const addFolder =  () => {
+  };
+
+
+  const setSaveResponse =  () => {
+  };
+
+
+  const setResults =  () => {
+  };
+
+
+  const setSavedFeed =  (newFeed) => {
+    console.log("newFeed");
+    console.log(newFeed);
+  };
+
+  let [position, setCenterPosition] = useState(null);
+  let [sideVisibility, setSideVisibility] = useState(null);
+  let [size, setSize] = useState(null);
  
-  //   return () => {
-  //     document.title = "Time stopped.";
-  //     clearInterval(intervalId);
-  //   };
-  // }, []);
+  const exposeSide = (side) => {
+    setCenterPosition(side);
+  };
 
-  // var loginInnerContainerClasses = ( loggedIn ?"hidden": "") + " anim";
+  const getCenterPosition = () => {
+    return position;
+  };
+
+  const getGlobalSize = () => {
+    return size;
+  };
+
+  const getSideVisibility = () => {
+    return sideVisibility;
+  };
 
   return (
-    // <Router>
-      <div id = "main">
+      <div id = "maincontainer">
           <div id = "header">
-            <h1>Chess</h1>
+            <h1>RssNest</h1>
           </div>
-          <div id = "leftBar">
-            {/* <Routes> */}
-              {/* <Route path = "/newgame"  element = {<Chessboard/>}>New Game</Route>
-              <Route path = "/watch">Watch</Route>
-              <Route path = "/chat">Chat</Route>
-              <Route path = "/famousgames">Famous Games</Route>
-              <Route path = "/puzzles">Puzzles</Route>
-              <Route path = "/playbot">Play a bot</Route>
-              <Route path = "/petbot">Build a Bot</Route>
-              <Route path = "/custom">Custom Rules</Route> */}
-              {/* <Route path = "/newgame"  element = {<Chessboard/>}>New Game</Route>
-              <Route path = "/watch">Watch</Route>
-              <Route path = "/chat">Chat</Route>
-              <Route path = "/famousgames">Famous Games</Route>
-              <Route path = "/puzzles">Puzzles</Route>
-              <Route path = "/playbot">Play a bot</Route>
-              <Route path = "/petbot">Build a Bot</Route>
-              <Route path = "/custom">Custom Rules</Route> */}
+          <Leftbar 
+            updateSaveOption = {updateSaveOption}
+            deleteStorage = {deleteStorage}
+            updateFromStorage = {updateFromStorage}
+            clearRenamingAll = {clearRenamingAll}
+            getFolders = {getFolders}
+            getSelectedFolder = {getSelectedFolder}
+            setSelectedFolder = {setSelectedFolder}
+            setSelectedSub = {setSelectedSub}
+            updateFeed = {updateFeed}
+            addFolder = {addFolder}
+            checkLoginStatus = {checkLoginStatus}
+            setCurrentFolder = {setCurrentFolder}
+            
+            getCenterPosition = {getCenterPosition()}
+            getGlobalSize = {getGlobalSize()}
+            getSideVisibility = {getSideVisibility()}
+          />
+          
+          <RSSList
+            setSaveResponse = {setSaveResponse}
+            setResults = {setResults}
+            setSavedFeed = {setSavedFeed}
+            exposeSide = {exposeSide}
+            getCenterPosition = {getCenterPosition()}
+            getGlobalSize = {getGlobalSize()}
+            getSideVisibility = {getSideVisibility()}
+          />
 
-              <ul>
-                <li><a href= "#">New Game</a></li>
-                <li><a>Watch</a></li>
-                <li><a>Chat</a></li>
-                <li><a>Famous Games</a></li>
-                <li><a>Puzzles</a></li>
-                <li><a>Play a bot</a></li>
-                <li><a>Build a Bot</a></li>
-                <li><a>Custom Rules</a></li>
-              </ul>
-            {/* </Routes> */}
-          </div>
-          <Chessboard />
-          {/* <div id = "loginFormsContainer">
-            <div className = {loginInnerContainerClasses} >
-              {!unmountLoginForms ? <Register hideSelf = {hideLoginForms} showSelf = {revealLoginForms} /> :null}
-              {!unmountLoginForms ? <Login  hideSelf = {hideLoginForms} showSelf = {revealLoginForms}/> :null}
-            </div>
-          </div>  */}
+          <Rightbar 
+
+            getCenterPosition = {getCenterPosition()}
+            getGlobalSize = {getGlobalSize()}
+            getSideVisibility = {getSideVisibility()}
+           />
       </div>
-    // </Router>
   );
 };
 
 Main.displayName = "Main";
-
 export default Main;
