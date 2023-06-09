@@ -5,7 +5,7 @@ let todoList = [];
 
 class TodoListStore extends EventEmitter {
 
-    lastUsed = window.lastUsedList; //set by ejs on first request     
+    lastUsed = window.lastUsedList;
     setTodoList(action){
         this.saveListToLocalStorage(action.payload);
         if(action.payload){

@@ -1,32 +1,49 @@
-import {UserData} from "../dataAccess/users";
 import * as helper from "../utils/jwtHelper";
 import {config} from "../../apiKeys";
-import * as utils from "../utils/misc";
+import {e, l, n} from "../utils/misc";
 import {ListData} from "../dataAccess/lists";
+import {UserData} from "../dataAccess/users";
+
 
 const dev = (config.curEnv === "development");
 
 const loginController = () =>{
+
+
+
+  const getUserInfo = async (req, res) =>{
+    // await UserData.comparePassword(loginUser.password, resUser.password);
+// await ListData.getListbyUserId(resUser.memberID, (getListError, resList)=>
+            
+  };
+  
   const login = async (req, res) =>{
+    
     const loginUser = {
         username: req.body.username,
         password: req.body.password
     };
 
     UserData.getUserByUsername(loginUser.username, (getUserError, resUser)=>{
-      if(utils.n(getUserError)){
-        if(!utils.n(resUser)){
+
+      l("User");
+      l(resUser);
+      
+      if(n(getUserError)){
+        if(!n(resUser)){
           UserData.comparePassword(loginUser.password, resUser.password, (compareErr, match)=>{
-            if(utils.n(compareErr)){
-              if(!utils.n(match)){
+            if(n(compareErr)){
+              if(!n(match)){
                 if( match !== false ){
-                  utils.l("Login Success for user:");
-                  utils.l(resUser);
-                  
                   ListData.getListbyUserId(resUser.memberID, (getListError, resList)=>{ 
-                    if(utils.n(getListError)){
+
+                    const list = resList;
+                    
+                    // const list = JSON.parse(resList.list);
+
+                    if(n(getListError)){
                       const token = helper.getLoginToken(loginUser.username);
-                      const expiryTime = Date.now() + (dev?36000:3600000); 
+                      const expiryTime = Date.now() + (dev?360000:3600000); 
                       
                       res.cookie("expiryTime", 
                         expiryTime, 
@@ -48,35 +65,36 @@ const loginController = () =>{
                           secure: !dev,
                           httpOnly: false,
                         });
-                      
-                      if(utils.n(resList)){
-                        res.status("200").send({data: {}});
+
+                      if(n(resList)){
+                        res.status(200).send({data: "List not found."});
                       } else {
-                        res.status("200").send({data: resList.list});
+                        res.status(200).send({data: list});
                       }
+                    } else {
+                      l("getListError Error");
+                      l(getListError);
                     }
                   });
-
                 } else {
-                  utils.l("Login Failed: Incorrect Password");
+                  l("Login Failed: Incorrect Password");
                   res.status("404").send({data:"User not found"});
                 }
               } else {
-                utils.l("comparePassword: Error comparing passwords");
+                l("comparePassword: Error comparing passwords");
                 res.status("500").send({data:"Login Failed"});
               } 
             } else {
-              utils.l("compareErr Error");
-              utils.e(compareErr);
+              l("compareErr Error");
               res.status("500").send({data:"Error"}); 
             }
           });
         } else {
-          utils.l("getUserError Error, user not found");
+          l("getUserError Error, user not found");
           res.status("404").send({data:"User not found"}); 
         }
       } else {
-        utils.l("getUserError Error");
+        l("getUserError Error");
         res.status("500").send({data:"Error searching for user"});
       }
     });
@@ -89,7 +107,8 @@ const loginController = () =>{
 
   return {
     login,
-    logout
+    logout,
+    getUserInfo
   };
 };
 

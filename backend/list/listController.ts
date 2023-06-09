@@ -1,22 +1,57 @@
 import {UserData} from"../dataAccess/users";
 import {ListData} from "../dataAccess/lists";
-import * as utils from "../utils/misc";
+import {l, n} from "../utils/misc";
+import Parser from "rss-parser";
 
 const listController = ()=> {
   const getList = (req, res) => {
-    res.send({test: "test"});
+    console.log("getList");
+    const urls = req.body.list;
+    const parser = new Parser();
+
+    console.log(urls);
+    
+    const getFeed =  async () => {
+      const newFeed = [];
+      let feed;
+      
+      for(let i = 0; i < urls.length; i++){
+
+        if(urls[i].length == 0){
+          continue;
+        }
+        
+        feed = await parser.parseURL(urls[i]);
+        feed.items.forEach(item => { 
+          const newFeedItem = {
+            title: item.title,
+            link: item.link,
+            pubDate: item.pubDate
+          };
+          newFeed.push(newFeedItem);
+        });
+      }
+
+      console.log(newFeed);
+
+      res.send(newFeed);
+      
+    };
+
+    getFeed();
   };
+
 
   const setList = (req, res) => {
     const username = req.userToken;
     
-    utils.l("Decoded username: " + username);
+    l("Decoded username: " + username);
 
-    if(!utils.n(username)){
+    if(!n(username)){
       UserData.getUserByUsername(username, (getUserError, resUser)=>{
-        if(utils.n(getUserError)){
-          if(!utils.n(resUser)){
-            utils.l(resUser); 
+        if(n(getUserError)){
+          if(!n(resUser)){
+            l(resUser); 
             
             const newList = {
               creationDate: new Date().getTime(),
@@ -26,10 +61,10 @@ const listController = ()=> {
             };
 
             ListData.updateList(resUser.memberID, newList, (saveListErr, savedList)=>{
-              if(utils.n(saveListErr)){ 
-                if(!utils.n(savedList)){
-                  utils.l("savedList");
-                  utils.l(savedList);
+              if(n(saveListErr)){ 
+                if(!n(savedList)){
+                  l("savedList");
+                  l(savedList);
                   const {list, creationDate} = savedList;
                   res.status("200").send({list, creationDate});
                 } else {
@@ -47,7 +82,7 @@ const listController = ()=> {
         }
       });
     } else {
-      utils.l("User not logged in");
+      l("User not logged in");
       res.status("204").send({data: "User not logged in"});
     }
   };

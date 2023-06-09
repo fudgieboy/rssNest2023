@@ -3,12 +3,12 @@ import dispatcher from "./Dispatcher";
 
 class LocalStore extends EventEmitter {
     // getLoginToken=()=>{ return loginToken;}
-
     loginList = [];
     
     getLoggedIn=()=>{ 
         var loggedInCookie = document.cookie.replace(/(?:(?:^|.*;\s*)loggedIn\s*\=\s*([^;]*).*$)|^.*$/, "$1");
-        if(loggedInCookie !== undefined && loggedInCookie.length > 0){
+        
+        if(loggedInCookie !== undefined && (loggedInCookie == true || loggedInCookie == "true")){
             return true;
         } else {
             return false;
@@ -18,7 +18,7 @@ class LocalStore extends EventEmitter {
     getLoginExpiryTime(){
         var loggedInCookieExpiry = document.cookie.replace(/(?:(?:^|.*;\s*)expiryTime\s*\=\s*([^;]*).*$)|^.*$/, "$1");
 
-        if( loggedInCookieExpiry !== undefined && loggedInCookieExpiry.length > 0){
+        if(loggedInCookieExpiry !== undefined && loggedInCookieExpiry == true){
             return parseInt(loggedInCookieExpiry) - new Date().getTime();
         } else {
             return 0;
@@ -29,7 +29,8 @@ class LocalStore extends EventEmitter {
         var delay = this.getLoginExpiryTime();
 
         this.loginList = action.payload;
-        action.payload.callback(action.payload, delay);
+
+        action.payload.callback(this.loginList, delay);
     }
 
     getLoginList=()=>{
@@ -37,7 +38,7 @@ class LocalStore extends EventEmitter {
     }
 
     setLogout(action){
-        action.payload.callback();
+        action.payload();
     }
 
     handleActions = (action) => {
@@ -60,6 +61,7 @@ class LocalStore extends EventEmitter {
 class LoginActions {
     loginUser(data, callback, error){
         data.callback = callback;
+        
         dispatcher.dispatch({
             type: "LOGIN_USER_STATUS",
             payload: data,
@@ -68,10 +70,9 @@ class LoginActions {
     }
 
     logoutUser(data, callback, error){
-        data.callback = callback;
         dispatcher.dispatch({
             type: "LOGOUT_USER_STATUS",
-            payload: data,
+            payload: callback,
             errors: error,
         });
     }

@@ -7,6 +7,19 @@ import cookieParser from "cookie-parser";
 import morgan from "morgan";
 import * as jwtHelper from "./backend/utils/jwtHelper";
 import ejs from "ejs";
+import {UserData} from "./backend/dataAccess/users";
+import {ListData} from "./backend/dataAccess/lists";
+import {l, n} from "./backend/utils/misc";
+
+import {connection} from "./backend/dataAccess/dbConnection";
+
+connection(config.dbCreds);
+
+
+import listRoutes from "./backend/list/listRoutes";
+import userRoutes from "./backend/users/userRoutes";
+
+
 const winston = require('winston');
 const port = 8080;
 
@@ -58,7 +71,7 @@ app.use(function(req, res, next) {
     req.headers["x-access-token"] ||
     req.cookies.token;
 
-  // !utils.n(encodedToken)? req.userToken = jwtHelper.verifyLoginToken(encodedToken):null;
+  !n(encodedToken)? req.userToken = jwtHelper.verifyLoginToken(encodedToken):null;
  
   next();
 });
@@ -71,9 +84,35 @@ if(curEnv == "production"){
 }
 
 app.get("/", (req,res) => {
-  res.render(path.resolve(__dirname, dirPrefix + "dist", "index.ejs"), {
-    socketPort: 5000
-  });
+  console.log("main route");
+
+  if(!n(req.userToken)){
+    UserData.getUserByUsername(req.userToken, (getUserError, resUser)=>{
+      ListData.getListbyUserId(resUser.memberID, (getListError, resList)=>{
+
+        let actuallyEmpty = false;
+
+        if(resList == null || resList.list.length === 0){
+          actuallyEmpty = true;
+          resList = {list: []};
+        }
+
+        console.log("return", resList.list);
+
+        res.render(path.resolve(__dirname, dirPrefix + "dist", "index.ejs"), {
+          lastUsedList: JSON.stringify(resList.list),
+          userListActuallyEmpty: actuallyEmpty
+        });
+
+      });
+    });
+  } else {
+    l("encodedToken is null");
+    res.render(path.resolve(__dirname, dirPrefix + "dist", "index.ejs"), {
+      lastUsedList: JSON.stringify([]),
+      userListActuallyEmpty: false
+    });
+  }
 });
 
 app.get("/test", (req,res) => {
@@ -86,10 +125,10 @@ app.get("/test", (req,res) => {
   res.render(path.resolve(__dirname, dirPrefix + "dist", "index.ejs"), {
     socketPort: 5000
   });
-});
+}); 
 
-app.use(require("./backend/list/listRoutes"));
-app.use(require("./backend/users/userRoutes"));
+app.use(listRoutes);
+app.use(userRoutes);
 
 console.log("starting app...");
 

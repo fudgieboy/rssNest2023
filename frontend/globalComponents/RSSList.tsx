@@ -1,6 +1,8 @@
 import React, { ReactElement, useEffect, useState, useRef} from "react";
 import $ from 'jquery';
-		
+import globalAPI from "../API/globalAPI";
+import RSSStore from "../stores/RSSStore";
+import ExampleList from "./ExampleList";
 
 interface RSSFunctionality {
   setSaveResponse: () => void;
@@ -11,7 +13,12 @@ interface RSSFunctionality {
   getCenterPosition: ()=> void;
   getGlobalSize: ()=> void;
   getSideVisibility: ()=> void;
+  currentFolder: string;
+  currentSearch: Array;
 }
+
+
+//https://blog.feedspot.com/world_news_rss_feeds/
 
 const RSSList: React.FC<RSSFunctionality> = (props: RSSFunctionality): ReactElement => {
   const [newFeed, setNewFeed] = React.useState('https://stackoverflow.com/feeds/tag?tagnames=javascript&sort=newest');
@@ -23,28 +30,17 @@ const RSSList: React.FC<RSSFunctionality> = (props: RSSFunctionality): ReactElem
   const lbOpen = useRef(null);
   const rbOpen = useRef(null);
 
-
-  
-  
-  useEffect(() => {  
-    // const interval = setInterval(() => {
-    //   rotateEl.current.style.transform = 'rotate('+degree+'deg)'; 
-    //   degree +=5;
-    //   setDegree(degree);
-    // }, 50);
-    // return () => clearInterval(interval);
-  }, []);
-
   let startAnimating  = false;
   let recenter = false;
   let lVisible = false;
   let rVisible  = false;
  
-  const barWidth = 300;																
+  const barWidth = 300;	
+
+  const [barOpacity, setActivateBarOpactiy] = useState(0);
 
   const sizes = [];   																               
   let resizing = false; 
-
 	 	//sizes and their respective values and view setting functions
 	 	sizes['smallSize'] 		= {};  														//main
 	 	sizes['midSmallSize']	= {}; 														//main
@@ -80,19 +76,15 @@ const RSSList: React.FC<RSSFunctionality> = (props: RSSFunctionality): ReactElem
 	 	sizes['largeMinus'].view = ()=>{};														//main
 	 	sizes['largeSize'].view = ()=>{};	
 
-	const [barOpacity, setActivateBarOpactiy] = useState(0);
 
 	useEffect(() => {
-
 		lbOpen.current.style.opacity = '.5';
 		rbOpen.current.style.opacity = '.5';
-
 	}, [barOpacity]);
 
 	function adjustLeft(){																	//main
 			// lBar.current.style.marginLeft = 0 + 'px';
 			// lBar.current.style.visibility = 'visible';
-
 			centerContainer.current.style.marginLeft = '0vw';
 			centerContainer.current.style.transform = 'translateX(0%)';
 			centerContainer.current.style.left = '300px';
@@ -134,15 +126,6 @@ const RSSList: React.FC<RSSFunctionality> = (props: RSSFunctionality): ReactElem
 			}
 	 	} 
 		
-		//  useEffect(() => {  
-		// 	const interval = setInterval(() => {
-		// 	  rotateEl.current.style.transform = 'rotate('+degree+'deg)'; 
-		// 	  degree +=5;
-		// 	  setDegree(degree);
-		// 	}, 50);
-		// 	return () => clearInterval(interval);
-		//   }, []);
-		
 	 	function genericView(){										//main
 	    	if(lVisible){ 
 	    		if(recenter){
@@ -156,7 +139,6 @@ const RSSList: React.FC<RSSFunctionality> = (props: RSSFunctionality): ReactElem
 	    		} else {
 	    			adjustRight();
 	    		}
-			} else {
 			}
 	 	}
 
@@ -206,20 +188,16 @@ const RSSList: React.FC<RSSFunctionality> = (props: RSSFunctionality): ReactElem
 			};
 
 			sizes['largeMinus'].view = function(){										//main
-			revealSides();
+				revealSides();
 				genericView();
 			};
 
 			sizes['largeSize'].view = function(){										//main
-			revealSides();
-			recenterContainer(); 
-			if(lVisible){
-			} else if(rVisible){
-			} else {
-			}
+				revealSides();
+				recenterContainer(); 
 			};
 
-		});
+		}, []);
 
 		function getCenter(){
 	 		let conWidth = getContainerWidth();
@@ -234,11 +212,6 @@ const RSSList: React.FC<RSSFunctionality> = (props: RSSFunctionality): ReactElem
 		
 
 	 	function recenterContainer(){
-			console.trace();
-			
-			lVisible = false;
-			rVisible = false;
-
 			centerContainer.current.style.marginLeft = '50vw';
 			centerContainer.current.style.transform = 'translateX(-50%)';
 			centerContainer.current.style.left = '-0px';
@@ -310,29 +283,42 @@ const RSSList: React.FC<RSSFunctionality> = (props: RSSFunctionality): ReactElem
 			resizing = false;
 		}
 
-		const checkLeft = function(){						//main
-			if(lVisible){
-				recenter = true;
-				startAnimating = true;
-				checkSize();
-			} else {
-				lVisible = true;
-				startAnimating = true;
-				checkSize();
-			}
-		};
+		let [position, setPosition] = useState("center"); 
 
-		const checkRight = function(){						//main
-			if(rVisible){
-				recenter = true;
-				startAnimating = true;
-				checkSize();
-			} else {
-				rVisible = true;
-				startAnimating = true;
-				checkSize();
+  		const prevCountRef = useRef();
+		
+		useEffect(() => {
+			if(position == "center"){
+				recenterContainer();
+			} else if(position == "left"){
+				if(prevCountRef.current == "left"){
+					recenterContainer();
+					prevCountRef.current = "center";
+				} else{
+					adjustLeft();
+				}
+			} else if(position == "right"){
+				if(prevCountRef.current == "right"){
+					recenterContainer();
+					prevCountRef.current = "center";
+				} else{
+					adjustRight();
+				}
 			}
+			prevCountRef.current = position;
+		}, [position]);
+		
+		const checkPosition = (newPos) => { 
+
+			if(newPos == prevCountRef.current){
+				setPosition("center");
+			} else {
+				setPosition(newPos);
+			}
+
+			
 		};
+		
 
 
   const retractHelp = function(e){	
@@ -346,9 +332,83 @@ const RSSList: React.FC<RSSFunctionality> = (props: RSSFunctionality): ReactElem
 
   const clearAllOptions =()=>{
   };
+
+  useEffect(()=>{
+	globalAPI.getList({list: props.currentSearch.feed}, 
+		(value)=>{
+			console.log(value);
+		},
+		(err)=>{
+		if(err){
+			console.log(err);
+		}
+	});
+  }, [props.currentSearch.counter]);
   
   const createNewFeed =()=>{
+	// username: "test",
+	// password: "password",
+	// email: "test@test.com"
+	
+	globalAPI.getList({list: [newFeed]}, 
+		(value)=>{
+			// console.log(value);
+		},
+		(err)=>{
+		if(err){
+			console.log(err);
+		}
+	});
   }; 
+
+  let textList = [];
+//   let textList = ExampleList.list;
+
+  useEffect(() => {
+  	RSSStore.store.on("update_rsslist", updateRSSFeed);
+  }, []);
+
+  const constructRSSFeed = (filteredFeed?) => {
+
+	let list = textList;
+
+	if(filteredFeed!= undefined && filteredFeed.length > 0 && filteredFeed!= null){ 
+		list = filteredFeed;
+	}
+
+	const feedItems = [];
+    for(let i = 0; i < list.length; i ++){
+		feedItems.push(
+			<li key = {i} className = "feedItem anim">
+				<a href = {list[i].link} target="_blank" rel = "noopener noreferrer">{list[i].title}</a>
+			</li>
+		);
+	}
+
+	const constructed = 
+		<ul id = "feedList">
+			{feedItems} 
+		</ul>;
+
+	return constructed;
+  };
+
+  const [constructedFeed, setConstructedFeed ] = useState(constructRSSFeed());
+  
+  useEffect(() => {
+	let elements = document.querySelectorAll(".feedItem");
+
+	for(let i = 0; i < elements.length; i ++){
+		elements[i].classList.add("noOffset");
+	}
+  }, [constructedFeed]);
+
+  
+  const updateRSSFeed = () => {
+	const feed = RSSStore.store.getRSSList();
+	textList = feed;
+	setConstructedFeed(constructRSSFeed());
+  };
   
   const startTutorial =()=>{
     // tutorial.init(true); 
@@ -359,8 +419,10 @@ const RSSList: React.FC<RSSFunctionality> = (props: RSSFunctionality): ReactElem
   };
 
   const filterUpdate = (ev) => {
-    setSearchText(ev.target.value);
+	const newList = textList.filter( (item) => { return item.title.indexOf(ev.target.value) > -1;});
+	setConstructedFeed(constructRSSFeed(newList));
   };
+
   const updateNewFeedText = (ev) => {
     setNewFeed(ev.target.value);
   };
@@ -374,27 +436,20 @@ const RSSList: React.FC<RSSFunctionality> = (props: RSSFunctionality): ReactElem
           <input id = "saveFeedButton" className = "button" type = "button" value = "[save]" onClick = {()=> {saveToFolder();}}/>
         </div>
         <div>
-          <input id = "newFeedField" className = "feedField button" maxLength = {200} type = "text" placeholder = "[New Feed]"  onChange = {(e)=> {updateNewFeedText(e);}} />
+          <input id = "newFeedField" className = "feedField button" maxLength = {200} type = "text" placeholder = "[New Feed]" value = {newFeed}  onChange = {(e)=> {updateNewFeedText(e);}} />
           <input id = "searchButton" className = "button"  type = "button" value = "[search]" onClick = {()=>{createNewFeed();}}/>
         </div>
       </div>  
-      <div id = "leftBarOpen" className = "openTab" onClick = {()=>{checkLeft();}} ref = {lbOpen}>
+      <div id = "leftBarOpen" className = "openTab" onClick = {()=>{checkPosition("left");}} ref = {lbOpen}>
       </div>
-      <div id = "rightBarOpen" className = "openTab" onClick = {()=>{checkRight();}} ref = {rbOpen}> 
+      <div id = "rightBarOpen" className = "openTab" onClick = {()=>{checkPosition("right");}} ref = {rbOpen}> 
       </div>
       <div id = "stream" className = "container">
         <div>
-          <ul id ="feedList">
-            {/* <li className = "feedItem anim" ng-repeat="article in outPut|orderBy:'title'|filter:filterSearch track by $index" rel="noopener noreferrer"> 
-              <a href = "{{article.link}}" target="_blank">{{article.title}}</a>
-            </li> */}
-          </ul>
+			{constructedFeed}
         </div> 
 
-      </div> 
-      <div id = "helpBar" className = "help anim expand" onMouseLeave = {(e)=> {  retractHelp(e);}} onMouseOver = {(e)=>{ expandHelp(e); } } onFocus = {()=>{}} onClick = {()=>{startTutorial();}}>
-        <p className = "anim" >Start Tutorial</p>
-      </div>
+      </div>  
     </div>
   );
 };

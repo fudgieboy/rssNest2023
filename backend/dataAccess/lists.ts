@@ -1,37 +1,37 @@
-import utils = require("../utils/misc");
-const mongoose = require("mongoose");
-const uniqid = require("uniqid");
+// import utils from"../utils/misc";
+import {Schema, model} from "mongoose";
+import uniqid from "uniqid";
+import {FolderInterface, SubscriptionInterface} from "../../shared/types";
+interface FolderList {
+	memberID: string;
+	listID: string;
+	creationDate: string;
+	list: Array<FolderInterface>;
+  }
 
-const ListSchema = new mongoose.Schema({
-	memberID: {
-		type: String,
-		index: true
-	},
-	listID: {
-		type: String,
-		index: false
-	},
-	creationDate: {
-		type: Number,
-		index: false
-	},
-	list: {
-		type: Array,
-		index: false
-	}
+const ListSchema = new Schema<FolderList>({
+	name: { type: String, required: true },
+	memberID: { type: String, required: true },
+	creationDate: { type: String, required: true },
+	list: { type: Array, required: true }
 });
 
-const ListData = mongoose.model("List", ListSchema);
+const ListModel = model("list", ListSchema);
 
-ListData.getListbyUserId = function(memberID, callback){
-	utils.l(memberID);
-	ListData.findOne({ memberID: memberID}, callback);
-};
+const ListData = {
+	getListbyUserId : function(memberID, callback){
+		ListModel.findOne({ memberID: memberID}, callback);
+	}, 
 
-ListData.updateList = function(memberID, inputData, callback){
-	inputData.listID = uniqid();
-	ListData.findOneAndUpdate( { memberID : memberID }, inputData, { upsert : true }, callback );
-	// List.updateOne( { memberID : memberID }, listData, { upsert : true }, callback );
+	createList : function(memberID, inputData, callback){
+		ListModel.findOneAndUpdate( { memberID : memberID }, inputData, { upsert : true }, callback );
+		// List.updateOne( { memberID : memberID }, listData, { upsert : true }, callback );
+	},
+	
+	updateList : function(memberID, inputData, callback){
+		ListModel.findOneAndUpdate( { memberID : memberID }, inputData, { upsert : true }, callback );
+		// List.updateOne( { memberID : memberID }, listData, { upsert : true }, callback );
+	}
 };
 
 

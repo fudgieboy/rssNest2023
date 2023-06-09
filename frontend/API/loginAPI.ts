@@ -1,7 +1,8 @@
-import localStore from "../stores/LocalStore";
-import todoListStore from "../stores/TodoListStore";
+import LocalStore from "../stores/LocalStore";
+import RSSStore from "../stores/RSSStore";
 
 const login = (params, callback, fail) => {
+
 
     fetch("/users/login", { 
         method: "POST",
@@ -13,8 +14,11 @@ const login = (params, callback, fail) => {
                 const reader = response.body.getReader();
                 reader.read().then((res)=>{
                     let token = String.fromCharCode.apply(null, res.value);
+
+                    
                     token = JSON.parse(token); 
-                    localStore.actions.loginUser(token, callback, fail);
+                    LocalStore.actions.loginUser(token.data.list, callback, fail);
+                    RSSStore.actions.updateRSSStore(token.data.list, callback, fail);
                 });
             } else {
                 console.log(response);
@@ -32,8 +36,7 @@ const logout = (callback, fail) => {
                 const reader = response.body.getReader();
                 reader.read().then((res)=>{
                     let token = String.fromCharCode.apply(null, res.value);
-                    console.log(JSON.parse(token));
-                    localStore.actions.logoutUser("", callback, fail);
+                    LocalStore.actions.logoutUser(token, callback, fail);
                 });
             } else {
                 console.log(response);
