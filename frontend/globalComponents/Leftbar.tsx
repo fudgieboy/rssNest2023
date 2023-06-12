@@ -56,6 +56,10 @@ const Leftbar: React.FC<FolderFunctionality> = (props: FolderFunctionality): Rea
 
   function updateLoginFolders() {
     foldersObject.current = LocalStore.store.getLoginList();
+
+    console.log("updateLoginFolders");
+    console.log(foldersObject.current);
+    
     modifyFolders(constructFolders());
   }
 

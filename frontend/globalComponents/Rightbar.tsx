@@ -26,12 +26,21 @@ const Rightbar: React.FC<RSSFunctionality> = (props: RSSFunctionality): ReactEle
     const newList = RSSStore.store.on("update_rsslist", retrieveLoginList);
     setRssList(newList);
   },[]);
+
+  useEffect(()=>{ 
+    if(LocalStore.store.getLoggedIn()){
+      switchToForm(0, "account");
+    }
+  }, []);
  
   // const getGlobalSize = () =>{
   //   return props.getGlobalSize();
   // };  
   
   function retrieveLoginList(){
+    console.log("retrieve login list");
+    const list = RSSStore.store.getRSSList();
+    console.log(list);
     return RSSStore.store.getRSSList();
   }
 
@@ -70,12 +79,6 @@ const Rightbar: React.FC<RSSFunctionality> = (props: RSSFunctionality): ReactEle
 
   //   revealLoginForms(showDelayTime);
   // };
-
-  useEffect(()=>{ 
-    if(LocalStore.store.getLoggedIn()){
-      switchToForm(0, "account");
-    }
-  }, []);
 
   // const loginInnerContainerClasses = ( loggedIn ?"hidden": "") + " anim";
   

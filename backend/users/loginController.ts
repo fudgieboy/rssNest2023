@@ -18,15 +18,17 @@ const loginController = () =>{
   };
   
   const login = async (req, res) =>{
-    
     const loginUser = {
-        username: req.body.username,
-        password: req.body.password
-    };
+      name: req.body.name,
+      email: req.body.email,
+      username: req.body.username,
+      password: req.body.password,
+      token: ""
+  };
 
     UserData.getUserByUsername(loginUser.username, (getUserError, resUser)=>{
 
-      l("User");
+      l("User");  //do a search on the first folder if it exists
       l(resUser);
       
       if(n(getUserError)){

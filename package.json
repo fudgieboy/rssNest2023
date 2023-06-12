@@ -5,7 +5,7 @@
   "main": "build/server.js",
   "engines": {
     "npm": "7",
-    "node": "15"
+    "node": "18"
   },
   "scripts": {
     "tsnode": "tsnd --respawn server.ts",

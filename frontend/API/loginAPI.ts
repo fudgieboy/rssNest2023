@@ -14,9 +14,11 @@ const login = (params, callback, fail) => {
                 const reader = response.body.getReader();
                 reader.read().then((res)=>{
                     let token = String.fromCharCode.apply(null, res.value);
-
-                    
                     token = JSON.parse(token); 
+
+                    console.log("login");
+                    console.log(token.data.list);
+                    
                     LocalStore.actions.loginUser(token.data.list, callback, fail);
                     RSSStore.actions.updateRSSStore(token.data.list, callback, fail);
                 });

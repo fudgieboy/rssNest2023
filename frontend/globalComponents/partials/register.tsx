@@ -21,16 +21,16 @@ const Register: React.FC<RegisterFunctionality> = (props:RegisterFunctionality):
       });
     };
   
-    const updateUsername = (val) => {
-      setUsername(val);
+    const updateUsername = (ev) => {
+      setUsername(ev.target.value);
     };
   
-    const updateEmail = (val) => {
-      setEmail(val);
+    const updateEmail = (ev) => {
+      setEmail(ev.target.value);
     };
   
-    const updatePassword = (val) => {
-      setPassword(val);
+    const updatePassword = (ev) => {
+      setPassword(ev.target.value);
     };
 
     const getLoginPage = (ev) => {

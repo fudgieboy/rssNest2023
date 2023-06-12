@@ -332,18 +332,6 @@ const RSSList: React.FC<RSSFunctionality> = (props: RSSFunctionality): ReactElem
 
   const clearAllOptions =()=>{
   };
-
-  useEffect(()=>{
-	globalAPI.getList({list: props.currentSearch.feed}, 
-		(value)=>{
-			console.log(value);
-		},
-		(err)=>{
-		if(err){
-			console.log(err);
-		}
-	});
-  }, [props.currentSearch.counter]);
   
   const createNewFeed =()=>{
 	// username: "test",
@@ -363,6 +351,20 @@ const RSSList: React.FC<RSSFunctionality> = (props: RSSFunctionality): ReactElem
 
   let textList = [];
 //   let textList = ExampleList.list;
+
+
+
+useEffect(()=>{
+	globalAPI.getList({list: props.currentSearch.feed}, 
+		(value)=>{
+			console.log(value);
+		},
+		(err)=>{
+			if(err){
+				console.log(err);
+			}
+	});
+  }, [props.currentSearch.counter]);
 
   useEffect(() => {
   	RSSStore.store.on("update_rsslist", updateRSSFeed);
@@ -407,6 +409,10 @@ const RSSList: React.FC<RSSFunctionality> = (props: RSSFunctionality): ReactElem
   const updateRSSFeed = () => {
 	const feed = RSSStore.store.getRSSList();
 	textList = feed;
+
+	console.log("updateRSSFeed");
+	console.log(feed);
+	
 	setConstructedFeed(constructRSSFeed());
   };
   

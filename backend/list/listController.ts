@@ -9,8 +9,6 @@ const listController = ()=> {
     const urls = req.body.list;
     const parser = new Parser();
 
-    console.log(urls);
-    
     const getFeed =  async () => {
       const newFeed = [];
       let feed;
@@ -32,7 +30,7 @@ const listController = ()=> {
         });
       }
 
-      console.log(newFeed);
+      // console.log(newFeed);
 
       res.send(newFeed);
       
