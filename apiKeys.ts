@@ -1,12 +1,12 @@
 const tryRequire = require("try-require");
 
-var config;
+const config;
 
-if( ((process.env.HEROKU || process.env.AWS) === "true") || (__dirname.indexOf("build")!= -1) ){
-    var env = process.env; 
+if( ((process.env.HEROKU || process.env.AWS || process.env.VERCEL) == true) || (__dirname.indexOf("build")!= -1) ){
+    const env = process.env; 
     config = {
         cookieSecret: env.COOKIE_SECRET,
-        curEnv: "development",
+        curEnv: process.env.ENVIRONMENT || "development",
         aes:{
             secret: env.AES_SECRET,
             pass: env.AES_PASS
@@ -18,7 +18,7 @@ if( ((process.env.HEROKU || process.env.AWS) === "true") || (__dirname.indexOf("
     };
 
 } else {
-    var url = __dirname + "/localconfig";
+    const url = __dirname + "/localconfig";
     if(tryRequire.resolve(url)){
         config = require(url);
     }
