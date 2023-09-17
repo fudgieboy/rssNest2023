@@ -10,6 +10,7 @@ import ejs from "ejs";
 import {UserData} from "./backend/dataAccess/users";
 import {ListData} from "./backend/dataAccess/lists";
 import {l, n} from "./backend/utils/misc";
+import sanitize from 'mongo-sanitize';
 
 import {connection} from "./backend/dataAccess/dbConnection";
 
@@ -66,6 +67,11 @@ app.use(function(req, res, next) {
 }); 
 
 app.use(function(req, res, next) {
+
+  for(let i in req.body){
+    req.body[i] = sanitize(req.body[i]);
+  }
+  
   const encodedToken = req.body.token ||
     req.query.token ||
     req.headers["x-access-token"] ||
@@ -83,26 +89,60 @@ if(curEnv == "production"){
   dirPrefix = "";
 }
 
-app.get("/", (req,res) => {
-  console.log("main route");
-
+app.get("/", async(req,res) => { 
   if(!n(req.userToken)){
     UserData.getUserByUsername(req.userToken, (getUserError, resUser)=>{
       ListData.getListbyUserId(resUser.memberID, (getListError, resList)=>{
 
         let actuallyEmpty = false;
+        const requests = resUser.friendRequests;
+        const requestsArray = [];
+        
 
+        
         if(resList == null || resList.list.length === 0){
           actuallyEmpty = true;
           resList = {list: []};
         }
 
-        console.log("return", resList.list);
+        for(let i in requests){
+          requestsArray.push(requests[i]);
+        }
 
-        res.render(path.resolve(__dirname, dirPrefix + "dist", "index.ejs"), {
-          lastUsedList: JSON.stringify(resList.list),
-          userListActuallyEmpty: actuallyEmpty
-        });
+        if(resUser.friends.length > 0){
+          const friendList = [];
+          for(let i = 0; i< resUser.friends.length; i++){
+            
+            console.log("getting frined array");
+            
+            UserData.getUserByUsername(resUser.friends[i], (getUserError, resUser2)=>{
+              ListData.getListbyUserId(resUser2.memberID, (getListError, resList2)=>{
+                if(n(getListError) && !n(resList2)){
+                  const newFriend = {friend: resUser2.username, list: resList2.list};
+                  friendList.push(newFriend);
+                  console.log(friendList);
+                }
+                if(i == resUser.friends.length-1){
+                  res.render(path.resolve(__dirname, dirPrefix + "dist", "index.ejs"), {
+                    lastUsedList: JSON.stringify(resList.list),
+                    userListActuallyEmpty: actuallyEmpty,
+                    friendRequests: JSON.stringify(requestsArray),
+                    friendList: JSON.stringify(friendList),
+                  });
+                }
+              });
+            });
+          }
+        } else {
+
+          res.render(path.resolve(__dirname, dirPrefix + "dist", "index.ejs"), {
+            lastUsedList: JSON.stringify(resList.list),
+            userListActuallyEmpty: actuallyEmpty,
+            friendRequests: JSON.stringify(requestsArray),
+            friendList: JSON.stringify([]),
+          });
+        }
+
 
       });
     });
@@ -110,7 +150,9 @@ app.get("/", (req,res) => {
     l("encodedToken is null");
     res.render(path.resolve(__dirname, dirPrefix + "dist", "index.ejs"), {
       lastUsedList: JSON.stringify([]),
-      userListActuallyEmpty: false
+      userListActuallyEmpty: false,
+      friendRequests: [],
+      friendList: JSON.stringify([]),
     });
   }
 });

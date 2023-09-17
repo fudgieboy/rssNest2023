@@ -8,6 +8,7 @@ interface ISubscription {
   description: string;
   index: number;
   value: string;
+  friend?: string;
   updateSubscriptionObjectName: (index: number, name: string)=>void;
   selectSub: (index: number)=>void;
 }
@@ -15,6 +16,7 @@ interface ISubscription {
 const Subscription: React.FC<ISubscription> = (props: ISubscription): ReactElement => {
   let [renaming, setRenaming] = useState(false);
   let [name, setName] = useState(props.name);
+  const friend = props.friend ? props.friend: "";
   
   const updateSubName = (newSubName)=>{
     setName(newSubName);
@@ -30,7 +32,6 @@ const Subscription: React.FC<ISubscription> = (props: ISubscription): ReactEleme
           <input className = "button folderButton" onChange = {(ev)=>{updateSubName(ev.target.value)}} type = "text" value ={name} onClick = {()=>{props.selectSub(props.index);}}/>
     </li>
   );
-  
   // return( <li className = "subscriptionItem" value = {props.name} description = {props.description}></li> );
 };
 
@@ -39,6 +40,7 @@ interface FolderP{
   subscriptions: SubscriptionInterface[];
   name: string;
   description: string;
+  friend?: string;
   index: number;
   updateSubOnFolderObject:(index: number, newName: string) => void;
   updateFolderObjectName: (index: number, newName: string) => void;
@@ -58,6 +60,9 @@ const Folder: React.FC<FolderP> = (props:FolderP): ReactElement => {
     };
     
     const addSub = ()=>{
+      if(props.friend){
+        return;
+      }
       const newSub = SubFactory();
 
       props.subscriptions.push(newSub);
@@ -69,6 +74,7 @@ const Folder: React.FC<FolderP> = (props:FolderP): ReactElement => {
             dateAdded = {newSub.dateAdded}
             description = { newSub.description }
             value={ newSub.value }
+            friend = {props.friend}
             key = { v4() }
             updateSubscriptionObjectName = {(i, newName)=>{
               props.updateSubOnFolderObject(i, newName);
@@ -92,6 +98,7 @@ const Folder: React.FC<FolderP> = (props:FolderP): ReactElement => {
           description= {props.subscriptions[i].description}
           value=  {props.subscriptions[i].value}
           name= {props.subscriptions[i].name}
+          friend = {props.friend}
           index = {i}
           key = { v4() }
           updateSubscriptionObjectName = {(i, newName)=>{
@@ -108,11 +115,12 @@ const Folder: React.FC<FolderP> = (props:FolderP): ReactElement => {
       return renderSubs;
     }
 
+    const friendButtonVisible = props.friend? "friendButton ": "";
     return( 
       <div id = { props.index + ""} className = "foldercontainer" >
         {
           <span className = "" >
-            <input className = "button folderButton" onChange = {(ev)=>{updateFolderName(ev.target.value);}} type = "text" value ={name} onClick = {()=>{props.selectFolder(props.index);}}/><div className = "addFolderButton" onClick = {(ev)=>{addSub();}}>+</div>
+            <input className = { friendButtonVisible + "button folderButton"} onChange = {(ev)=>{updateFolderName(ev.target.value);}} type = "text" value ={name} onClick = {(ev)=>{ev.preventDefault(); props.selectFolder(props.index);}}/><div className = "addFolderButton" onClick = {(ev)=>{addSub();}}>+</div>
           </span>
         }
         <ul id = "subscriptionsList">

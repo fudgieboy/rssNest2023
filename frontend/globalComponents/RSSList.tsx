@@ -19,8 +19,10 @@ interface RSSFunctionality {
 
 
 //https://blog.feedspot.com/world_news_rss_feeds/
+//https://www.nytimes.com/rss
 
 const RSSList: React.FC<RSSFunctionality> = (props: RSSFunctionality): ReactElement => {
+	
   const [newFeed, setNewFeed] = React.useState('https://stackoverflow.com/feeds/tag?tagnames=javascript&sort=newest');
   const [searchText, setSearchText] = React.useState("");
   const exposeSide = props.exposeSide;
@@ -357,7 +359,7 @@ const RSSList: React.FC<RSSFunctionality> = (props: RSSFunctionality): ReactElem
 useEffect(()=>{
 	globalAPI.getList({list: props.currentSearch.feed}, 
 		(value)=>{
-			console.log(value);
+			// console.log(value);
 		},
 		(err)=>{
 			if(err){
@@ -410,8 +412,8 @@ useEffect(()=>{
 	const feed = RSSStore.store.getRSSList();
 	textList = feed;
 
-	console.log("updateRSSFeed");
-	console.log(feed);
+	// console.log("updateRSSFeed");
+	// console.log(feed);
 	
 	setConstructedFeed(constructRSSFeed());
   };

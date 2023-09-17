@@ -357,6 +357,12 @@ fg
   float: left;
 }
 
+#friends{
+  position: absolute;
+  width: 100%;
+  top: 50%;  
+}
+
 .feedItem:nth-child(2n+0){
   left: 1000px;
   position: relative;
@@ -528,6 +534,10 @@ body{
   font-family: arial;
 }
 
+#accounts, #membershipStatus, #noAuth, #loginContainer{
+  height: 100%;
+}
+
 #membershipStatus{
   position: relative;
 }
@@ -535,6 +545,7 @@ body{
 #loginContainer{
   width: 900px;
   position: absolute;
+  height: 100%;
   input{
     box-sizing: border-box;
   }
@@ -548,6 +559,8 @@ body{
 }
 
 #accountInfo{
+  position: relative;
+  height: 100%;
   div{
     h2{
       text-align: center;

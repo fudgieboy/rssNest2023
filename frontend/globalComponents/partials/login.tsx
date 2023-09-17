@@ -1,5 +1,7 @@
-import React, { ReactElement} from "react";
+import React, { useState, ReactElement} from "react";
 import LoginAPI from "../../API/loginAPI"; 
+
+import FlashMessage from "react-flash-message";
 
 interface LoginFunctionality {
   showSide: (delay:number, side: string) => void;
@@ -11,28 +13,24 @@ interface LoginFunctionality {
 const Login: React.FC<LoginFunctionality> = (props:LoginFunctionality): ReactElement => {
   const [username, setUsername] = React.useState(""); 
   const [password, setPassword] = React.useState(""); 
- 
-	const updateUsername = (ev) => {
-    setUsername(ev.target.value);
-  };
+  const [status, setStatus] = useState(false);
+  const [message, setMessage] = useState('');
 
-  const updatePassword = (ev) => {
-    setPassword(ev.target.value);
-  };
- 
 	const login = (ev) => {
     ev.preventDefault();
     LoginAPI.login({
-        username: "test",
-        password: "password"
+        username: username,
+        password: password
       }, 
       (loadedList)=>{
         //set the appropriate delay here based on the cookie age from the server
 
-
         props.showSide(0, "account");
       },
-      (errMsg)=>{ console.log(errMsg);});
+      (errMsg)=>{ 
+        setMessage(errMsg.data);
+        setStatus(true);
+      });
   };
     
   const getRegisterPage = () => {
@@ -47,14 +45,19 @@ const Login: React.FC<LoginFunctionality> = (props:LoginFunctionality): ReactEle
           <div id = "registerquery"><div className = "question">Not registered?</div> <button onClick = {()=>getRegisterPage()} type="submit" style = {{marginTop: '10px'}} className = "button registerButton" id = "actionSelect">[register]</button></div>
           <form id="submitForm" onSubmit = {(ev)=>{login(ev);}}>
             <div className="">
-              <input maxLength={16} id = "username" type="text" className="rightField" name="username" placeholder="[username]" onChange = {(ev)=>{updateUsername(ev);}}/>
+              <input maxLength={16} id = "username" type="text" className="rightField" name="username" placeholder="[username]" onChange = {(ev)=>{setUsername(ev.target.value);}}/>
             </div>
             <div className="">
-              <input maxLength={32} id = "password" type="password" className="rightField" name="password" placeholder="[password]" onChange = {(ev)=>{updatePassword(ev);}} />
+              <input maxLength={32} id = "password" type="password" className="rightField" name="password" placeholder="[password]" onChange = {(ev)=>{setPassword(ev.target.value);}} />
             </div>
             <button type="submit" className="button">[submit]</button>
           </form>
         </div>
+            {status && (
+            <FlashMessage duration={5000}>
+              <strong>{message}</strong>
+            </FlashMessage>
+          )}
       </div>
     </div>
 	);

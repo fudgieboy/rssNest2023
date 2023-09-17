@@ -1,13 +1,14 @@
-import React, { ReactElement } from "react";
+import React, { ReactElement, useState } from "react";
 import LoginAPI from "../../API/loginAPI";
-
+import LocalStore from "../../stores/LocalStore";
 interface AccountFunctionality {
     showSide: (delay:number, side: string) => void;
     updateLoggedInStatus: (delay:number) => void;
   }
 
 const Account: React.FC<AccountFunctionality> = (props:AccountFunctionality): ReactElement => {
-    
+  let [friendName, setFriendName] = useState("");
+
   const expandOptions = (ev)=>{
 
   };
@@ -25,6 +26,46 @@ const Account: React.FC<AccountFunctionality> = (props:AccountFunctionality): Re
   };
     
   const pinOptions = (ev)=>{
+
+  };
+
+  const generateFriendRequests = () => {
+    const friendRequests = LocalStore.store.getFriendRequests();
+    
+    if(friendRequests != null && friendRequests != undefined){
+      const constructedRequests = [];
+    
+      for(let i = 0; i<friendRequests.length; i++){
+        constructedRequests.push(<li className="friendrequest">{friendRequests[i]} <button onClick = {()=>{ finishAddFriend(friendRequests[i], true);}}>Accept</button> <button onClick = {()=>{ finishAddFriend(friendRequests[i], false);}}>Reject</button></li>);
+      }
+      
+      return constructedRequests;
+    } else {
+      return <li className="friendrequest"></li>;
+    }
+  };
+  
+  const finishAddFriend = (friendName, acceptFriend) => {
+    LoginAPI.finishAddFriend( {
+      username: friendName,
+      friendAccepted: acceptFriend,
+    }, 
+      (response)=>{
+        console.log(response);
+      },
+      (errMsg)=>{ console.log(errMsg);});
+
+  };
+
+  
+  const addFriend = () => {
+    LoginAPI.addFriend( {
+      username: friendName,
+    }, 
+      (response)=>{
+        console.log(response);
+      },
+      (errMsg)=>{ console.log(errMsg);});
 
   };
 
@@ -58,6 +99,20 @@ const Account: React.FC<AccountFunctionality> = (props:AccountFunctionality): Re
       <div className = "optionsContainer">
         <input className = "button" type="checkbox" ng-model="autoLoginOpt" onChange = {(ev)=>{updateLoginOpt(ev)}} ng-click=""/>Automatically Log In
       </div>
+    </div>
+
+    
+
+    <div id = "friends">
+          <h2>Friends:</h2>
+
+          get info from list controller and login controller. add functionality to add friend based on public id string
+          <ul id = "friendRequestList" className = "friendList">
+            {generateFriendRequests()}
+          </ul>
+
+          <input onChange = {(ev)=>{setFriendName(ev.target.value);}} placeholder = "Add Friend By Username..."></input>
+          <button onClick = {()=>{addFriend();}} className="button registerButton" >[add Friend]</button>
     </div>
   </div>
   );

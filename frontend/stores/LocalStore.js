@@ -4,7 +4,13 @@ import dispatcher from "./Dispatcher";
 class LocalStore extends EventEmitter {
     // getLoginToken=()=>{ return loginToken;}
     loginList = [];
+    requests = window.friendRequests;
+    friendList = window.friendList;
     
+    getFriendList=()=>{
+        return window.friendList;
+    };
+
     getLoggedIn=()=>{ 
         var loggedInCookie = document.cookie.replace(/(?:(?:^|.*;\s*)loggedIn\s*\=\s*([^;]*).*$)|^.*$/, "$1");
         
@@ -25,10 +31,15 @@ class LocalStore extends EventEmitter {
         }
     }
 
+    getFriendRequests(){
+        return this.requests;
+    } 
+
     setLogin(action){
         var delay = this.getLoginExpiryTime();
 
-        this.loginList = action.payload;
+        this.loginList = action.payload.lists;
+        this.requests = action.payload.requests;
 
         action.payload.callback(this.loginList, delay);
     }
@@ -59,12 +70,11 @@ class LocalStore extends EventEmitter {
 }
 
 class LoginActions {
-    loginUser(data, callback, error){
-        data.callback = callback;
+    loginUser(lists, requests, callback, error){
         
         dispatcher.dispatch({
             type: "LOGIN_USER_STATUS",
-            payload: data,
+            payload: {lists, requests, callback},
             errors: error,
         });
     }

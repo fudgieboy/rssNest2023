@@ -3,17 +3,95 @@ import {config} from "../../apiKeys";
 import {e, l, n} from "../utils/misc";
 import {ListData} from "../dataAccess/lists";
 import {UserData} from "../dataAccess/users";
+import sanitize from 'mongo-sanitize';
 
+//clear the login token on logout. user can log in with token after logging out
 
 const dev = (config.curEnv === "development");
 
 const loginController = () =>{
-
-
-
+  
   const getUserInfo = async (req, res) =>{
+    res.send({});
+  };
+  
+  const finishAddFriend = (req, res) =>{
+    console.log("finishAddFriend");
+    if(req.userToken != undefined && req.userToken !=null && !n(req.body.friendAccepted)){ 
+        req.userToken = sanitize(req.userToken);
+        // req.body.username = "bleh";
+        
+        UserData.removeFriendRequestFromQueue( sanitize(req.userToken), req.body.username, (updateError, resUpdate)=>{
+          if(n(updateError) && !n(resUpdate && req.body.friendAccepted)){
+            if(req.body.friendAccepted){
+              UserData.completeFriendRequest(req.userToken, req.body.username, (completeErrOne, newFriendOne) => {
+                if(n(completeErrOne) && !n(newFriendOne)){
+                  UserData.completeFriendRequest( req.body.username, req.userToken, (completeErrTwo, newFriendTwo) => {
+                    if(n(completeErrTwo) && !n(newFriendTwo)){
+                      UserData.removeOutgoingFriendRequest(req.body.username, req.userToken, (completeErrThree, finalResut)=>{
+                        if(n(completeErrThree)){
+                          res.status(200).send({data: "New Friend Added"});
+                        } else {
+                          
+                        }
+                      });
+                    }
+                  });
+                } else {
+                  res.status(500).send({data: "Failed to complete friend request approval"});
+                }
+              });
+            } else {
+              res.status(200).send({data: "Request Rejected"});
+            }
+            
+          //   // res.status(200).send({data: resUpdate});
+          }
+        });
+    }
+  };
+
+  const createFriendRequest = (req, res) =>{
+    if(req.userToken != undefined){
+
+      const username = req.body.username;
+       
+      const requester = sanitize(req.userToken);
+
+      UserData.insertUserFriendRequest(username, requester, (getFriendError, resFriend)=>{
+        req.userToken = sanitize(req.userToken);
+        if(n(getFriendError) && resFriend != null){
+          UserData.getUserByUsername(req.userToken, (getLoggedInUserError, loggedinUser)=>{
+              if(n(getLoggedInUserError) && loggedinUser!= null){
+                UserData.insertOutgoingFriendRequest(req.userToken, req.body.username, (completeErrThree, finalResut)=>{
+                  if(n(getLoggedInUserError) && loggedinUser!= null){
+                      res.status(200).send({data: "Request sent"});
+                  } else {
+                    res.status(500).send({data: "Failed to send request"});
+                  }
+                });
+              } else {
+              //   usertoken invalid can't add friend login
+              // return error;
+              }
+          }); 
+        } else {
+          // return error;
+        }
+      });
+
+    } else {
+      //not logged in failed to add user
+    }
+
+    /*get login token and get username of person logged in
+      get user by username
+      add the user to the friends list
+      return the other user's userlist
+    */
+
     // await UserData.comparePassword(loginUser.password, resUser.password);
-// await ListData.getListbyUserId(resUser.memberID, (getListError, resList)=>
+    // await ListData.getListbyUserId(resUser.memberID, (getListError, resList)=>
             
   };
   
@@ -24,80 +102,83 @@ const loginController = () =>{
       username: req.body.username,
       password: req.body.password,
       token: ""
-  };
+    };
 
     UserData.getUserByUsername(loginUser.username, (getUserError, resUser)=>{
-
-      l("User");  //do a search on the first folder if it exists
-      l(resUser);
-      
       if(n(getUserError)){
         if(!n(resUser)){
           UserData.comparePassword(loginUser.password, resUser.password, (compareErr, match)=>{
             if(n(compareErr)){
               if(!n(match)){
                 if( match !== false ){
-                  ListData.getListbyUserId(resUser.memberID, (getListError, resList)=>{ 
 
-                    const list = resList;
-                    
-                    // const list = JSON.parse(resList.list);
+                  const token = helper.getLoginToken(loginUser.username);
+                  const expiryTime = Date.now() + (dev?360000:3600000); 
+                  
+                  res.cookie("expiryTime", 
+                    expiryTime, 
+                    {expires: new Date(expiryTime),
+                      secure: !dev,
+                      httpOnly: false,
+                    });
 
-                    if(n(getListError)){
-                      const token = helper.getLoginToken(loginUser.username);
-                      const expiryTime = Date.now() + (dev?360000:3600000); 
-                      
-                      res.cookie("expiryTime", 
-                        expiryTime, 
-                        {expires: new Date(expiryTime),
-                          secure: !dev,
-                          httpOnly: false,
-                        });
+                  res.cookie("token", 
+                    token, 
+                    {expires: new Date(expiryTime),
+                      secure: !dev,
+                      httpOnly: true,
+                    });
 
-                      res.cookie("token", 
-                        token, 
-                        {expires: new Date(expiryTime),
-                          secure: !dev,
-                          httpOnly: true,
-                        });
+                  res.cookie("loggedIn", 
+                    true, 
+                    {expires: new Date(expiryTime),
+                      secure: !dev,
+                      httpOnly: false,
+                    });
+                  
+                  ListData.getListbyUserId(resUser.memberID, (getListError, resListData)=>{ 
+                    if(!(resListData == null || resListData == undefined)){
+                      let list;
+                      let requests;
 
-                      res.cookie("loggedIn", 
-                        true, 
-                        {expires: new Date(expiryTime),
-                          secure: !dev,
-                          httpOnly: false,
-                        });
+                      if(n(getListError)){
 
-                      if(n(resList)){
-                        res.status(200).send({data: "List not found."});
+                        if(n(resListData)){
+                          res.status(404).send({data: "User not found."});
+                        } else {
+                          res.status(200).send({data: {list, requests}});
+                        }
                       } else {
-                        res.status(200).send({data: list});
+                        l("getListError Error");
+                        l(getListError);
                       }
                     } else {
-                      l("getListError Error");
-                      l(getListError);
+                      let requests;
+                      !n(resUser)? requests =  resUser.friendRequests: "[]";
+
+                      res.status(200).send({data: {list: [], requests}});
                     }
                   });
                 } else {
                   l("Login Failed: Incorrect Password");
-                  res.status("404").send({data:"User not found"});
+                  res.status(401).send({data:"Incorrect Password"});
                 }
               } else {
-                l("comparePassword: Error comparing passwords");
-                res.status("500").send({data:"Login Failed"});
+                l("No matching password");
+                res.status(401).send({data:"Login Failed"});
               } 
             } else {
-              l("compareErr Error");
-              res.status("500").send({data:"Error"}); 
+              l("Error comparing passwords");
+              res.status(401).send({data:"Error"}); 
             }
           });
         } else {
-          l("getUserError Error, user not found");
-          res.status("404").send({data:"User not found"}); 
+          l("GetUserError Error, user not found");
+          res.status(404).send({data:"User not found"}); 
         }
       } else {
-        l("getUserError Error");
-        res.status("500").send({data:"Error searching for user"});
+        l("GetUserError Error");
+        res.status(500).send({data:"Error searching for user"});
       }
     });
   };
@@ -110,6 +191,8 @@ const loginController = () =>{
   return {
     login,
     logout,
+    createFriendRequest,
+    finishAddFriend,
     getUserInfo
   };
 };

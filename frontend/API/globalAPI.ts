@@ -15,7 +15,6 @@ const setList = (list, callback, fail) => {
         },
         body: body })
         .then((response)=>{
-            console.log(response);
             if(response.status === 200){
                 const reader = response.body.getReader();
                 reader.read().then((res)=>{
@@ -47,9 +46,6 @@ const getList = (params, callback, error) => {
                     let list = String.fromCharCode.apply(null, res.value);
                     list = JSON.parse(list);
 
-                    console.log("RSSLIST");
-                    console.log(list);
-                    
                     //if there's an error import examplelist for now
                     RSSStore.actions.updateRSSStore(list, callback, error);
                     // RSSStore.actions.updateRSSStore(exampleList, callback, error);

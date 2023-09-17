@@ -2,7 +2,9 @@ import {UserData} from "../dataAccess/users";
 import * as helper from "../utils/jwtHelper";
 // import {config} from "../../localconfig";
 import {config} from "../../apiKeys";
-import * as utils from "../utils/misc";
+import {e, l, n} from "../utils/misc";
+import validator from "validator";
+
 const curEnv = config.curEnv;
 const dev = (curEnv === "development");
 
@@ -16,13 +18,42 @@ const registerController = ()=>{
             token: ""
         };
         
+      const passwordStrength = validator.isStrongPassword(newUser.password, {minLength: 8, 
+        minNumbers: 1, 
+        minSymbols: 1, 
+        minLowercase: 1, 
+        minUppercase: 1
+      });
+
+      const validEmail = validator.isEmail(newUser.email, {
+         allow_display_name: false,
+         require_display_name: false,
+         allow_ip_domain: false,
+         allow_underscores: false,
+         domain_specific_validation: false,
+         blacklisted_chars: '',
+         host_blacklist: [] 
+        });
+
+      console.log(passwordStrength);
+      console.log(validEmail);
+
+      !validator.isFloat(newUser.name);
+      newUser.name.length < 13;
+      newUser.name.length > 2;
+      
+      !validator.isFloat(newUser.username);
+      newUser.username.length < 13;
+      newUser.username.length > 4;
+      
+        
       UserData.getUserByEmail(newUser.email, (getUserErr, resUser)=>{
         UserData.checkExistingUser(newUser.email, newUser.username, (getUserErr, resUser)=>{
-          if(utils.n(getUserErr)){
-            if(utils.n(resUser)) {
+          if(n(getUserErr)){
+            if(n(resUser)) {
               UserData.registerUser(newUser, (registerErr, registeredUser)=>{
-                if(utils.n(registerErr)){
-                  if(!utils.n(registeredUser)){
+                if(n(registerErr)){
+                  if(!n(registeredUser)){
                     const token = helper.getLoginToken(newUser.username);
                     const expiryTime = Date.now() + (dev?360000:3600000);
 
@@ -47,22 +78,20 @@ const registerController = ()=>{
                         httpOnly: false,
                       });
 
-                      utils.l(registeredUser);
+                      // l(registeredUser);
                       // e(err, tr(10));
 
-                    res.status(200).send({data: "register success"});
+                    res.status(200).send({data: "Register success"});
                   } else {
-                    console.log("fail");
-                    res.status(500).send({ data: "registration failed"});
+                    res.status(500).send({ data: "Registration failed"});
                   }
                 } else {
-                    console.log("fail");
-                    res.status(500).send({ data: "registration failed" });
+                    res.status(500).send({ data: "Registration failed" });
                 }
               });
             } else {
-              utils.l("User already defined");
-              res.status(204).send({data:"user is already defined"});
+              l("User already defined");
+              res.status(204).send({data:"User is already defined"});
             }
           } else {
             res.status(500).send({data:"Error getting user"});

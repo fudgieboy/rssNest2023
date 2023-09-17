@@ -38,9 +38,7 @@ const Rightbar: React.FC<RSSFunctionality> = (props: RSSFunctionality): ReactEle
   // };  
   
   function retrieveLoginList(){
-    console.log("retrieve login list");
     const list = RSSStore.store.getRSSList();
-    console.log(list);
     return RSSStore.store.getRSSList();
   }
 

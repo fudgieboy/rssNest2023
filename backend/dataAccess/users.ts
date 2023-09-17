@@ -8,6 +8,9 @@ interface User {
 	registerDate: string;
 	password: string;
 	email: string;
+	friendRequests: Array<string>;
+	friends: Array<string>;
+	outgoingFriendRequests: Array<string>;
 	username: string;
 	// lastLoginDate: string;
 	// refreshToken: string;
@@ -23,7 +26,9 @@ interface User {
 	password: { type: String, required: true },
 	email: { type: String, required: true },
 	username: { type: String, required: true },
-	// lastLoginDate: { type: String, required: true },
+	friends: { type: Array, required: true },
+	friendRequests: { type: Array, required: true },
+	outgoingFriendRequests: { type: Array, required: true },
 	// refreshToken: { type: String, required: true },
 	// accessToken: { type: String, required: true },
   });
@@ -39,13 +44,6 @@ const UserData = {
 	},
 
 	registerUser : function(newUser, callback){
-		// newUser.name = "jimbob";
-		// newUser.username = "test";
-		// newUser.password = "password";
-		// newUser.email = "z@z.z";
-		
-		console.log(newUser);
-		
 		const user = new UserModel(newUser);
 		bcrypt.genSalt(10, function(err, salt) {
 			bcrypt.hash(newUser.password, salt, function(err, hash) {
@@ -73,9 +71,28 @@ const UserData = {
 		UserModel.findOne({email: email}, callback);
 	},
 
-	getUserByUsername : function(username, callback){
+	getUserByUsername : function(username, callback){ 
 		UserModel.findOne({username: username}, callback);
-	}
+	},
+
+	insertUserFriendRequest : function(username, inputData, callback){ 
+		UserModel.findOneAndUpdate( {username: username}, { $addToSet: {"friendRequests": inputData} }, callback);
+	},
+
+	completeFriendRequest : function(username, inputData, callback){ 
+		UserModel.updateOne( {username: username}, { $addToSet: {"friends": inputData} }, callback);
+	},
+
+	removeFriendRequestFromQueue : function(username, removeData, callback){ 
+		UserModel.updateOne( {username: username}, { $pull: {"friendRequests": removeData} }, callback);
+	},
+
+	removeOutgoingFriendRequest : function(username, removeData, callback){ 
+		UserModel.updateOne( {username: username}, { $pull: {"outgoingFriendRequests": removeData} }, callback);
+	},
+	insertOutgoingFriendRequest : function(username, inputData, callback){ 
+		UserModel.findOneAndUpdate( {username: username}, { $addToSet: {"outgoingFriendRequests": inputData} }, callback);
+	},
 };
 
 export {UserData};

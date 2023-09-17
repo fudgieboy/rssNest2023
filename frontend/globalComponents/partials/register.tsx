@@ -1,6 +1,7 @@
 import React, { ReactElement, useState} from "react";
 import LocalStore from "../../stores/LocalStore";
 import LoginAPI from "../../API/loginAPI";
+import FlashMessage from "react-flash-message";
 
 interface RegisterFunctionality {
   showSide: (delay:number, side: string) => void;
@@ -11,6 +12,7 @@ const Register: React.FC<RegisterFunctionality> = (props:RegisterFunctionality):
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [email, setEmail] = useState("");
+    const [message, setMessage] = useState('');
   
     const registerUser = (event) => {
       event.preventDefault();
@@ -18,6 +20,10 @@ const Register: React.FC<RegisterFunctionality> = (props:RegisterFunctionality):
         username: username,
         password: password,
         email: email
+      }, (registerInfo)=>{
+      }, (errMsg)=>{
+        setMessage(errMsg.data);
+        setStatus(true);
       });
     };
   
@@ -49,6 +55,10 @@ const Register: React.FC<RegisterFunctionality> = (props:RegisterFunctionality):
             <input type ="password" maxLength={32} className="rightField" placeholder="[password]" name="password2"/>
             <button type ="submit" className ="button btn btn-default"  onClick = {(ev)=>{registerUser(ev);}}>[submit]</button>
         </form>
+
+          <FlashMessage duration={5000}>
+                <strong>{message}</strong>
+          </FlashMessage>
         </div>
   );
 };

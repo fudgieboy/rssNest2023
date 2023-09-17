@@ -6,6 +6,8 @@ import path from "path";
 import webpack from "webpack";
 import pkg from "./package.json";
 
+console.log(curEnv)
+
 const DIST = path.resolve(__dirname, "build/dist");
 const SRC = path.resolve(__dirname, "frontend");
 const SHARED = path.resolve(__dirname, "shared");

@@ -39,6 +39,9 @@ const Leftbar: React.FC<FolderFunctionality> = (props: FolderFunctionality): Rea
   const [renaming, setRenaming] = useState(false);
   const [folders, modifyFolders] = useState<ReactElement[]>(constructFolders());
 
+  let friendFolders = LocalStore.store.getFriendList();
+  
+
   const receiveSubscriptionUpdate = (index, name)=>{
     foldersObject.current[selectedFolder].subscriptions[index].name = name;
     saveUpdatedFolders();
@@ -103,6 +106,7 @@ const Leftbar: React.FC<FolderFunctionality> = (props: FolderFunctionality): Rea
   };
 
   function constructFolders (): ReactElement[] {
+
     if( foldersObject == undefined ||foldersObject == null || (foldersObject!=null && foldersObject.current==null) ){ //this is a big bug
         return [];
     } 
@@ -131,6 +135,30 @@ const Leftbar: React.FC<FolderFunctionality> = (props: FolderFunctionality): Rea
       );
     }
     
+    if(LocalStore.store.getFriendList() !== undefined){
+      for(let i = 0; i < LocalStore.store.getFriendList().length; i++){
+        const list = LocalStore.store.getFriendList()[i].list;
+        for(let j = 0; j < list.length; j++){
+          const folder2 = <Folder dateAdded = {list[j].dateAdded}
+              description = { list[j].description }
+              subscriptions = { list[j].subscriptions }
+              name = { list[j].name }
+              friend = {LocalStore.store.getFriendList()[i].friend}
+              index = {j}
+              key = { v4() }
+              updateSubOnFolderObject = {(index, name)=>{ receiveSubscriptionUpdate(index, name); }}
+              updateFolderObjectName = {(index, subscriptions)=>{
+                receiveFolderNameUpdate(index, subscriptions);
+              }}
+              updateFolderObject = {(index, subscriptions)=>{
+                receiveUpdateFromFolder(index, subscriptions);
+              }}
+              selectFolder = {(j)=>{ setSelectedFolder(j);}}
+            />;
+          renderFolders.push(folder2);
+        }
+      }
+    }
     return renderFolders;
   }
 
