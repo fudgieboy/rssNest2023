@@ -1,6 +1,6 @@
 const tryRequire = require("try-require");
 
-const config;
+let config;
 
 if( ((process.env.HEROKU || process.env.AWS || process.env.VERCEL) == true) || (__dirname.indexOf("build")!= -1) ){
     const env = process.env; 
