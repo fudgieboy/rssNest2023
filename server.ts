@@ -16,13 +16,12 @@ import {connection} from "./backend/dataAccess/dbConnection";
 
 connection(config.dbCreds);
 
-
 import listRoutes from "./backend/list/listRoutes";
 import userRoutes from "./backend/users/userRoutes";
 
 
 const winston = require('winston');
-const port = 8080;
+const port = 8090;
 
 const logConfiguration = {
   'transports': [

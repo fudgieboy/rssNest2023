@@ -1,6 +1,6 @@
 module.exports = {
   apps : [{
-    name   : "Chess PM2 App",
+    name   : "Rssnest",
     script : "./build/server.js",
     env_production: {
        NODE_ENV: "production"

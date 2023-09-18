@@ -119,22 +119,16 @@ module.exports = {
       port: 3000, 
       proxy: {
         "!/": { //don't proxy root
-          target: "http://localhost:8080/",
+          target: "http://localhost:8090/",
           ws: false,
           secure: false,
           changeOrigin: true
         },
       "/**": { //proxy everything else
-        target: "http://localhost:8080/",
+        target: "http://localhost:8090/",
         ws: false,
         secure: false,
         changeOrigin: true
-      },
-      "/": { //for the websocket connection
-          target: 'wss://localhost:8081',
-          secure: true,
-          ws: true
-        }
       },
       overlay: {
         warnings: true,

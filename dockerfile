@@ -3,5 +3,5 @@ RUN mkdir -p /app
 WORKDIR /app
 COPY . /app
 RUN npm install
-EXPOSE 80 443 22 3000/udp 8080/tcp 8081/tcp 8081/udp
+EXPOSE 80 443 22 3000/udp 8090/tcp 
 CMD [ "npm", "run", "startBP" ]
