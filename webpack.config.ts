@@ -124,15 +124,12 @@ module.exports = {
           secure: false,
           changeOrigin: true
         },
-      "/**": { //proxy everything else
-        target: "http://localhost:8090/",
-        ws: false,
-        secure: false,
-        changeOrigin: true
-      },
-      overlay: {
-        warnings: true,
-        errors: true
+        "/**": { //proxy everything else
+          target: "http://localhost:8090/",
+          ws: false,
+          secure: false,
+          changeOrigin: true
+        },
       },
       // headers {
       //   "Access-Control-Allow-Origin", "*"
