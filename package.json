@@ -15,7 +15,7 @@
     "dev": "concurrently \"nodemon server.js\" \"webpack-dev-server\" \"npm run test\" ",
     "tscf": "tsc --project tsconfig.json",
     "tscb": "tsc --project tsnodeconfig.json",
-    "kill": "concurrently \"kill-port 8090\"",
+    "kill": "concurrently \"kill-port 8080\"",
     "start": "npm run buildprod && npm run startbuild",
     "startbuild": "node build/server.js",
     "buildprod": "npm run clean && npm run build && npm run tscb",

@@ -21,7 +21,7 @@ import userRoutes from "./backend/users/userRoutes";
 
 
 const winston = require('winston');
-const port = 8090;
+const port = 8080;
 
 const logConfiguration = {
   'transports': [

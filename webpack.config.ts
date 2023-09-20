@@ -119,13 +119,13 @@ module.exports = {
       port: 3000, 
       proxy: {
         "!/": { //don't proxy root
-          target: "http://localhost:8090/",
+          target: "http://localhost:8080/",
           ws: false,
           secure: false,
           changeOrigin: true
         },
         "/**": { //proxy everything else
-          target: "http://localhost:8090/",
+          target: "http://localhost:8080/",
           ws: false,
           secure: false,
           changeOrigin: true
