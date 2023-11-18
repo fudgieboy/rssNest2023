@@ -8,8 +8,6 @@ interface LoginFunctionality {
   updateLoggedInStatus: (delay:number) => void;
 }
 
-
-
 const Login: React.FC<LoginFunctionality> = (props:LoginFunctionality): ReactElement => {
   const [username, setUsername] = React.useState(""); 
   const [password, setPassword] = React.useState(""); 

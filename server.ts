@@ -11,7 +11,6 @@ import {UserData} from "./backend/dataAccess/users";
 import {ListData} from "./backend/dataAccess/lists";
 import {l, n} from "./backend/utils/misc";
 import sanitize from 'mongo-sanitize';
-
 import {connection} from "./backend/dataAccess/dbConnection";
 
 connection(config.dbCreds);
@@ -32,7 +31,13 @@ const logConfiguration = {
   ]
 };
 
+
 const logger = winston.createLogger(logConfiguration);
+
+logger.log({
+  message: "testing test route",
+  level: 'info'
+});
 
 const app = express();
 
@@ -156,17 +161,7 @@ app.get("/", async(req,res) => {
   }
 });
 
-app.get("/test", (req,res) => {
 
-  logger.log({
-    message: "testing test route",
-    level: 'info'
-  });
-  
-  res.render(path.resolve(__dirname, dirPrefix + "dist", "index.ejs"), {
-    socketPort: 5000
-  });
-}); 
 
 app.use(listRoutes);
 app.use(userRoutes);

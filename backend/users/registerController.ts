@@ -11,7 +11,7 @@ const dev = (curEnv === "development");
 const registerController = ()=>{
     const register = async (req, res) =>{
       const newUser = {
-            name: req.body.name,
+            name: req.body.username,
             email: req.body.email,
             username: req.body.username,
             password: req.body.password,
@@ -37,6 +37,9 @@ const registerController = ()=>{
 
       console.log(passwordStrength);
       console.log(validEmail);
+
+      console.log(req.body)
+      console.log(newUser)
 
       !validator.isFloat(newUser.name);
       newUser.name.length < 13;

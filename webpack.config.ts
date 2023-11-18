@@ -21,7 +21,6 @@ let devtool =  "";
   // devtool = "source-map";
 // }
 
-
 console.log(curEnv);
 
 module.exports = {
